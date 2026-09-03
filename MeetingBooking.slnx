@@ -1,0 +1,17 @@
+<Solution>
+  <Folder Name="/Api/">
+    <Project Path="Api/MeetingBooking.Api.csproj" />
+  </Folder>
+  <Folder Name="/Application/">
+    <Project Path="Application/MeetingBooking.Application.csproj" />
+  </Folder>
+  <Folder Name="/Domain/">
+    <Project Path="Domain/MeetingBooking.Domain.csproj" />
+  </Folder>
+  <Folder Name="/Infrastructure/">
+    <Project Path="Infrastructure/MeetingBooking.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/MeetingBooking.Tests/MeetingBooking.Tests.csproj" />
+  </Folder>
+</Solution>
