@@ -1,10 +1,12 @@
 using MeetingBooking.Application.Common.Interfaces;
 using MeetingBooking.Domain;
+using MeetingBooking.Infrastructure.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace MeetingBooking.Infrastructure.Persistence;
 
-public class MeetingBookingDbContext : DbContext, IApplicationDbContext
+public class MeetingBookingDbContext : IdentityDbContext<ApplicationUser>, IApplicationDbContext
 {
     public MeetingBookingDbContext(DbContextOptions<MeetingBookingDbContext> options)
         : base(options)
@@ -17,7 +19,7 @@ public class MeetingBookingDbContext : DbContext, IApplicationDbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder); 
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(MeetingBookingDbContext).Assembly);
-        base.OnModelCreating(modelBuilder);
     }
 }
