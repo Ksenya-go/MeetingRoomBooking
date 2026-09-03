@@ -1,0 +1,26 @@
+﻿@model IReadOnlyList<MeetingBooking.Application.Resources.ResourceDto>
+<h2>Resources</h2>
+@if (User.IsInRole("Admin"))
+{
+    <a asp-action="Create" class="btn btn-primary mb-3">Add Resource</a>
+}
+<table class="table">
+    <thead><tr><th>Name</th><th>Capacity</th><th></th></tr></thead>
+    <tbody>
+        @foreach (var r in Model)
+        {
+            <tr>
+                <td>@r.Name</td>
+                <td>@r.Capacity</td>
+                <td>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <form asp-action="Delete" asp-route-id="@r.Id" method="post" style="display:inline">
+                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
