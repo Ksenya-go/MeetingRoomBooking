@@ -2,6 +2,7 @@ using MeetingBooking.Application.Common.Interfaces;
 using MeetingBooking.Infrastructure.Identity;
 using MeetingBooking.Infrastructure.Notifications;
 using MeetingBooking.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,8 +16,31 @@ builder.Services.AddScoped<IApplicationDbContext>(provider =>
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IBookingNotifier, NoOpBookingNotifier>();
 
+builder.Services
+    .AddIdentity<ApplicationUser, IdentityRole>(options =>
+    {
+        options.Password.RequiredLength = 8;
+        options.Password.RequireNonAlphanumeric = false;
+        options.User.RequireUniqueEmail = true;
+    })
+    .AddEntityFrameworkStores<MeetingBookingDbContext>()
+    .AddDefaultTokenProviders();
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/Login";
+    options.AccessDeniedPath = "/Account/AccessDenied";
+});
+
+
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    await IdentitySeeder.SeedAsync(scope.ServiceProvider);
+}
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -35,6 +59,8 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapStaticAssets();
+app.UseAuthentication();
+
 
 app.MapControllerRoute(
     name: "default",
