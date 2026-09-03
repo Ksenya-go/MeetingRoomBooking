@@ -14,12 +14,12 @@ Frontend: TBD (see /src/Web or /src/Client once decided)
 
 ## Architecture
 
-Clean Architecture + DDD, CQRS via MediatR.
+Clean Architecture + DDD, CQRS via Mediator.
 
-- `src/Domain` — entities (Resource, TimeSlot, Booking, ApplicationUser), value objects, domain rules. No dependencies on other layers.
-- `src/Application` — CQRS commands/queries and their handlers, interfaces (IBookingRepository, IBookingNotifier, etc.), FluentValidation validators, FluentResults for expected failures. Depends only on Domain.
-- `src/Infrastructure` — EF Core DbContext and configurations, Azure SQL access, SignalR hub implementation, ASP.NET Core Identity setup.Depends on Application.
--  `src/Api` — ASP.NET Core MVC project: controllers, Razor Views, wwwroot (Bootstrap 5, SignalR client JS), DI composition root, middleware, appsettings. No business logic here — controllers only call MediatR and return results.
+- `Domain` — entities (Resource, TimeSlot, Booking, ApplicationUser), value objects, domain rules. No dependencies on other layers.
+- `Application` — CQRS commands/queries and their handlers, interfaces (IBookingRepository, IBookingNotifier, etc.), FluentValidation validators, FluentResults for expected failures. Depends only on Domain.
+- `Infrastructure` — EF Core DbContext and configurations, Azure SQL access, SignalR hub implementation, ASP.NET Core Identity setup.Depends on Application.
+-  `Api` — ASP.NET Core MVC project: controllers, Razor Views, wwwroot (Bootstrap 5, SignalR client JS), DI composition root, middleware, appsettings. No business logic here — controllers only call MediatR and return results.
 - `tests/MeetingBooking.Tests` — xUnit tests: unit tests for handlers,integration tests via WebApplicationFactory, and the concurrency test(see below).
 
 ## Roles
@@ -76,8 +76,8 @@ Configuration → Application settings, never committed to the repo.
 ## Commands
 - Build: `dotnet build`
 - Run tests: `dotnet test`
-- Run API locally: `dotnet run --project src/Api`
-- Apply migrations: `dotnet ef database update --project src/Infrastructure --startup-project src/Api`
+- Run API locally: `dotnet run --project Api`
+- Apply migrations: `dotnet ef database update --project Infrastructure --startup-project Api`
 
 ## Commit style
 Atomic commits, imperative mood, short "why" in the body when the change
