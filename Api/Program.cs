@@ -1,3 +1,6 @@
+using MeetingBooking.Application.Common.Interfaces;
+using MeetingBooking.Infrastructure.Identity;
+using MeetingBooking.Infrastructure.Notifications;
 using MeetingBooking.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,7 +10,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<MeetingBookingDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
+builder.Services.AddScoped<IApplicationDbContext>(provider =>
+    provider.GetRequiredService<MeetingBookingDbContext>());
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+builder.Services.AddScoped<IBookingNotifier, NoOpBookingNotifier>();
 
 
 var app = builder.Build();
