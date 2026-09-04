@@ -9,7 +9,8 @@ using Microsoft.EntityFrameworkCore;
 namespace MeetingBooking.Application.Bookings;
 
 public class BookingsHandler : IRequestHandler<BookSlotCommand, Result<Guid>>, 
-    IRequestHandler<GetResourceScheduleQuery, Result<ResourceScheduleDto>>
+    IRequestHandler<GetResourceScheduleQuery, Result<ResourceScheduleDto>>,
+    IRequestHandler<GetBookingsQuery, Result<IReadOnlyList<BookingListItemDto>>>
 {
     private readonly IApplicationDbContext _db;
     private readonly ICurrentUserService _currentUser;
@@ -50,7 +51,24 @@ public class BookingsHandler : IRequestHandler<BookSlotCommand, Result<Guid>>,
         return ex.InnerException is SqlException sqlEx &&
                (sqlEx.Number == 2601 || sqlEx.Number == 2627);
     }
+    public async ValueTask<Result<IReadOnlyList<BookingListItemDto>>> Handle(GetBookingsQuery request, CancellationToken cancellationToken)
+    {
+        var query = _db.Bookings.AsQueryable();
 
+        if (!request.IsAdmin)
+        {
+            query = query.Where(b => b.UserId == request.UserId);
+        }
+
+        var bookings = await query
+            .OrderByDescending(b => b.Date)
+            .Join(_db.Resources, b => b.ResourceId, r => r.Id, (b, r) => new { b, r })
+            .Join(_db.TimeSlots, x => x.b.TimeSlotId, t => t.Id, (x, t) => new BookingListItemDto(
+                x.b.Id, x.r.Name, t.StartTime, t.EndTime, x.b.Date, x.b.UserId))
+            .ToListAsync(cancellationToken);
+
+        return Result.Ok((IReadOnlyList<BookingListItemDto>)bookings);
+    }
     public async ValueTask<Result<ResourceScheduleDto>> Handle(GetResourceScheduleQuery request, CancellationToken cancellationToken)
     {
         var resource = await _db.Resources
@@ -76,6 +94,11 @@ public class BookingsHandler : IRequestHandler<BookSlotCommand, Result<Guid>>,
 
         return Result.Ok(new ResourceScheduleDto(resource.Id, resource.Name, request.Date, slots));
     }
+
+    
+
+
+
 
 
 }
