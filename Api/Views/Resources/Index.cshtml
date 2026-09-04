@@ -20,7 +20,21 @@
                         </form>
                     }
                 </td>
+                <td>
+                    <a asp-controller="Bookings" asp-action="Schedule" asp-route-resourceId="@r.Id" class="btn btn-sm btn-outline-primary">Schedule</a>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <form asp-action="Delete" asp-route-id="@r.Id" method="post" style="display:inline">
+                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                        </form>
+                    }
+                </td>
+
+
             </tr>
         }
+       
+
+
     </tbody>
 </table>

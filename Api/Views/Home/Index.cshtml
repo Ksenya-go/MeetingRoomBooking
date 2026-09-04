@@ -3,6 +3,22 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">Meeting Room Booking</h1>
+    <p>Book meeting rooms and view real-time availability.</p>
+
+    @if (User.Identity != null && User.Identity.IsAuthenticated)
+    {
+        <p>Welcome back, @User.Identity.Name!</p>
+        <a asp-controller="Resources" asp-action="Index" class="btn btn-primary btn-lg">View Resources</a>
+        <form asp-controller="Account" asp-action="Logout" method="post" class="mt-3">
+            <button type="submit" class="btn btn-link">Logout</button>
+        </form>
+    }
+    else
+    {
+        <div class="d-flex justify-content-center gap-3 mt-4">
+            <a asp-controller="Account" asp-action="Login" class="btn btn-primary btn-lg">Login</a>
+            <a asp-controller="Account" asp-action="Register" class="btn btn-outline-primary btn-lg">Register</a>
+        </div>
+    }
 </div>
