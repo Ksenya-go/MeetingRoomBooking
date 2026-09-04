@@ -1,0 +1,29 @@
+﻿@model IReadOnlyList<MeetingBooking.Application.Bookings.BookingListItemDto>
+<h2>@(User.IsInRole("Admin") ? "All Bookings" : "My Bookings")</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Resource</th>
+            <th>Date</th>
+            <th>Time</th>
+            @if (User.IsInRole("Admin"))
+            {
+                <th>User</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var b in Model)
+        {
+            <tr>
+                <td>@b.ResourceName</td>
+                <td>@b.Date.ToString("dd.MM.yyyy")</td>
+                <td>@b.StartTime.ToString("HH:mm") - @b.EndTime.ToString("HH:mm")</td>
+                @if (User.IsInRole("Admin"))
+                {
+                    <td>@b.UserId</td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
