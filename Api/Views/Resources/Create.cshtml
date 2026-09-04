@@ -1,18 +1,21 @@
 ﻿@model MeetingBooking.Application.Resources.CreateResourceCommand
 <h2>Create Resource</h2>
-<form asp-action="Create" method="post">
-    <div class="mb-3">
-        <label>Name</label>
-        <input name="Name" class="form-control" />
-    </div>
-    <div class="mb-3">
-        <label>Description</label>
-        <input name="Description" class="form-control" />
-    </div>
-    <div class="mb-3">
-        <label>Capacity</label>
-        <input name="Capacity" type="number" class="form-control" />
-    </div>
-    <div asp-validation-summary="All" class="text-danger"></div>
-    <button type="submit" class="btn btn-primary">Create</button>
-</form>
+<div class="surface-card form-narrow">
+    <form asp-action="Create" method="post">
+        <div class="mb-3">
+            <label>Room name</label>
+            <input name="Name" class="form-control" placeholder="e.g. Conference Room A" />
+        </div>
+        <div class="mb-3">
+            <label>Description</label>
+            <input name="Description" class="form-control" placeholder="Optional details about this room" />
+            <div class="form-text text-muted">Shown to users when they view the room. Optional.</div>
+        </div>
+        <div class="mb-3">
+            <label>Capacity</label>
+            <input name="Capacity" type="number" min="1" class="form-control" placeholder="Number of people it seats" />
+        </div>
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <button type="submit" class="btn btn-primary">Create</button>
+    </form>
+</div>
