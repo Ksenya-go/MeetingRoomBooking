@@ -47,4 +47,34 @@ public class ResourcesController : Controller
         await _sender.Send(new DeleteResourceCommand(id), cancellationToken);
         return RedirectToAction(nameof(Index));
     }
+
+    [Authorize(Roles = "Admin")]
+    [HttpGet]
+    public async Task<IActionResult> Edit(Guid id, CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(new GetAllResourcesQuery(), cancellationToken);
+        var resource = result.Value?.FirstOrDefault(r => r.Id == id);
+
+        if (resource is null)
+            return NotFound();
+
+        var command = new UpdateResourceCommand(resource.Id, resource.Name, resource.Description, resource.Capacity);
+        return View(command);
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(UpdateResourceCommand command, CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(command, cancellationToken);
+        if (result.IsFailed)
+        {
+            ModelState.AddModelError(string.Empty, string.Join("; ", result.Errors));
+            return View(command);
+        }
+        return RedirectToAction(nameof(Index));
+    }
+
+
 }
