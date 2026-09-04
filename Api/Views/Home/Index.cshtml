@@ -10,6 +10,7 @@
     {
         <p>Welcome back, @User.Identity.Name!</p>
         <a asp-controller="Resources" asp-action="Index" class="btn btn-primary btn-lg">View Resources</a>
+        <a class="nav-link" asp-controller="TimeSlots" asp-action="Index">Time Slots</a>
         <form asp-controller="Account" asp-action="Logout" method="post" class="mt-3">
             <button type="submit" class="btn btn-link">Logout</button>
         </form>

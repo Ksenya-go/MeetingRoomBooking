@@ -1,0 +1,14 @@
+﻿@model MeetingBooking.Application.TimeSlots.CreateTimeSlotCommand
+<h2>Add Time Slot</h2>
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label>Start Time</label>
+        <input name="StartTime" type="time" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label>End Time</label>
+        <input name="EndTime" type="time" class="form-control" />
+    </div>
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <button type="submit" class="btn btn-primary">Create</button>
+</form>

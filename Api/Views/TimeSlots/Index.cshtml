@@ -1,0 +1,20 @@
+﻿@model IReadOnlyList<MeetingBooking.Application.TimeSlots.TimeSlotDto>
+<h2>Time Slots</h2>
+<a asp-action="Create" class="btn btn-primary mb-3">Add Time Slot</a>
+<table class="table">
+    <thead><tr><th>Start</th><th>End</th><th></th></tr></thead>
+    <tbody>
+        @foreach (var slot in Model)
+        {
+            <tr>
+                <td>@slot.StartTime.ToString("HH:mm")</td>
+                <td>@slot.EndTime.ToString("HH:mm")</td>
+                <td>
+                    <form asp-action="Delete" asp-route-id="@slot.Id" method="post" style="display:inline">
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
