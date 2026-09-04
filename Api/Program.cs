@@ -1,7 +1,7 @@
 using MeetingBooking.Application.Common.Interfaces;
 using MeetingBooking.Infrastructure.Identity;
-using MeetingBooking.Infrastructure.Notifications;
 using MeetingBooking.Infrastructure.Persistence;
+using MeetingBooking.Infrastructure.Realtime;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,7 +14,7 @@ builder.Services.AddDbContext<MeetingBookingDbContext>(options =>
 builder.Services.AddScoped<IApplicationDbContext>(provider =>
     provider.GetRequiredService<MeetingBookingDbContext>());
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
-builder.Services.AddScoped<IBookingNotifier, NoOpBookingNotifier>();
+builder.Services.AddScoped<IBookingNotifier, SignalRBookingNotifier>();
 
 builder.Services
     .AddIdentity<ApplicationUser, IdentityRole>(options =>
@@ -26,12 +26,15 @@ builder.Services
     .AddEntityFrameworkStores<MeetingBookingDbContext>()
     .AddDefaultTokenProviders();
 
+
+builder.Services.AddMediator();
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Account/Login";
     options.AccessDeniedPath = "/Account/AccessDenied";
 });
 
+builder.Services.AddSignalR().AddAzureSignalR();
 
 
 var app = builder.Build();
@@ -56,10 +59,9 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 
-app.UseAuthorization();
-
-app.MapStaticAssets();
 app.UseAuthentication();
+app.UseAuthorization();
+app.MapStaticAssets();
 
 
 app.MapControllerRoute(
@@ -67,5 +69,5 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
-
+app.MapHub<BookingHub>("/hubs/booking");
 app.Run();

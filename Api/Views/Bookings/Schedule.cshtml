@@ -52,3 +52,38 @@
         }
     </tbody>
 </table>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+    <script>
+        const resourceId = "@Model.ResourceId";
+        const currentDate = "@Model.Date.ToString("yyyy-MM-dd")";
+
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/hubs/booking")
+            .withAutomaticReconnect()
+            .build();
+
+        connection.on("SlotBooked", (data) => {
+      
+            if (data.date !== currentDate) return;
+
+            const row = document.querySelector(`tr[data-timeslot-id="${data.timeSlotId}"]`);
+            if (!row) return;
+
+            const statusCell = row.querySelector(".status-cell");
+            statusCell.innerHTML = '<span class="badge bg-danger">Booked</span>';
+
+            const actionCell = row.cells[2];
+            actionCell.innerHTML = "";
+        });
+
+        connection.start()
+            .then(() => connection.invoke("JoinResourceGroup", resourceId))
+            .catch(err => console.error("SignalR connection error:", err));
+
+        window.addEventListener("beforeunload", () => {
+            connection.invoke("LeaveResourceGroup", resourceId).catch(() => {});
+        });
+    </script>
+}
