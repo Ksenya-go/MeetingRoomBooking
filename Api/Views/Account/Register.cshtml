@@ -1,20 +1,21 @@
 ﻿@model MeetingBooking.Api.Models.RegisterViewModel
-
-<h2>Register</h2>
-<form asp-action="Register" method="post" class="col-md-4">
-    <div class="mb-3">
-        <label asp-for="FullName"></label>
-        <input asp-for="FullName" class="form-control" />
-    </div>
-    <div class="mb-3">
-        <label asp-for="Email"></label>
-        <input asp-for="Email" class="form-control" />
-    </div>
-    <div class="mb-3">
-        <label asp-for="Password"></label>
-        <input asp-for="Password" class="form-control" />
-    </div>
-    <div asp-validation-summary="All" class="text-danger"></div>
-    <button type="submit" class="btn btn-primary">Register</button>
-</form>
-<p class="mt-3">Already have an account? <a asp-action="Login">Login here</a></p>
+<h2 class="text-center">@Localizer["Account_RegisterTitle"]</h2>
+<div class="surface-card form-narrow mx-auto mt-5">
+    <form asp-action="Register" method="post">
+        <div class="mb-3">
+            <label asp-for="FullName">@Localizer["Account_FullNameLabel"]</label>
+            <input asp-for="FullName" class="form-control" placeholder="@Localizer["Account_FullNamePlaceholder"]" />
+        </div>
+        <div class="mb-3">
+            <label asp-for="Email">@Localizer["Account_EmailLabel"]</label>
+            <input asp-for="Email" class="form-control" placeholder="@Localizer["Account_EmailPlaceholder"]" />
+        </div>
+        <div class="mb-3">
+            <label asp-for="Password">@Localizer["Account_PasswordLabel"]</label>
+            <input asp-for="Password" class="form-control" placeholder="@Localizer["Account_RegisterPasswordPlaceholder"]" />
+        </div>
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <button type="submit" class="btn btn-primary">@Localizer["Account_RegisterButton"]</button>
+        <p class="mt-3 mb-0">@Localizer["Account_HaveAccountPrompt"] <a asp-action="Login">@Localizer["Account_LoginLink"]</a></p>
+    </form>
+</div>

@@ -63,7 +63,8 @@ public class BookingConcurrencyTests : IAsyncLifetime
             var handler = new BookingsHandler(
                 db,
                 new FakeCurrentUserService($"user-{i}"),
-                new NoOpBookingNotifier());
+                new NoOpBookingNotifier(),
+                new NoOpUserLookupService());
 
             var command = new BookSlotCommand(_resourceId, _timeSlotId, _date);
             return await handler.Handle(command, CancellationToken.None);

@@ -6,4 +6,5 @@ public record BookingListItemDto(
     TimeOnly StartTime,
     TimeOnly EndTime,
     DateOnly Date,
-    string UserId);
+    string UserId,
+    string UserDisplayName);

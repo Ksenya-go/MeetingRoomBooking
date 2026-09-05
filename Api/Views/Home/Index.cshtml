@@ -1,25 +1,9 @@
+﻿@inject IStringLocalizer<SharedResource> Localizer
 ﻿@{
-    ViewData["Title"] = "Home Page";
+ViewData["Title"] = Localizer["Nav_Home"];
 }
 
-<div class="text-center">
-    <h1 class="display-4">Meeting Room Booking</h1>
-    <p>Book meeting rooms and view real-time availability.</p>
-
-    @if (User.Identity != null && User.Identity.IsAuthenticated)
-    {
-        <p>Welcome back, @User.Identity.Name!</p>
-        <a asp-controller="Resources" asp-action="Index" class="btn btn-primary btn-lg">View Resources</a>
-        <a class="nav-link" asp-controller="TimeSlots" asp-action="Index">Time Slots</a>
-        <form asp-controller="Account" asp-action="Logout" method="post" class="mt-3">
-            <button type="submit" class="btn btn-link">Logout</button>
-        </form>
-    }
-    else
-    {
-        <div class="d-flex justify-content-center gap-3 mt-4">
-            <a asp-controller="Account" asp-action="Login" class="btn btn-primary btn-lg">Login</a>
-            <a asp-controller="Account" asp-action="Register" class="btn btn-outline-primary btn-lg">Register</a>
-        </div>
-    }
+<div class="hero text-center">
+    <h1 class="display-5 mb-3">@Localizer["Home_Title"]</h1>
+    <p class="hero-subtitle">@Localizer["Home_Subtitle"]</p>
 </div>

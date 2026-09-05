@@ -1,46 +1,88 @@
+﻿@inject IStringLocalizer<SharedResource> Localizer
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - MeetingBooking.Api</title>
+    <title>@ViewData["Title"] - Meeting Room Booking</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/MeetingBooking.Api.styles.css" asp-append-version="true" />
 </head>
 <body>
+    @{
+        var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+        string ActiveIf(string controller) => currentController == controller ? "active" : "";
+    }
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-light">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">MeetingBooking.Api</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <span class="brand-dot"></span> MeetingBooking
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        <a class="nav-link @ActiveIf("Home")" asp-controller="Home" asp-action="Index">@Localizer["Nav_Home"]</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                        <a class="nav-link" asp-controller="Bookings" asp-action="MyBookings">My Bookings</a>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link @ActiveIf("Resources")" asp-controller="Resources" asp-action="Index">@Localizer["Nav_MeetingRooms"]</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @ActiveIf("Bookings")" asp-controller="Bookings" asp-action="MyBookings">
+                                    @(User.IsInRole("Admin") ? Localizer["Nav_AllBookings"] : Localizer["Nav_MyBookings"])
+                                </a>
+                            </li>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link @ActiveIf("TimeSlots")" asp-controller="TimeSlots" asp-action="Index">@Localizer["Nav_TimeSlots"]</a>
+                                </li>
+                            }
+                        }
+                    </ul>
+                    <ul class="navbar-nav">
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item d-flex align-items-center gap-3">
+                                <span class="text-muted small">@User.Identity.Name</span>
+                                <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+                                    <button type="submit" class="btn btn-sm btn-danger">@Localizer["Nav_Logout"]</button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link @ActiveIf("Account")" asp-controller="Account" asp-action="Login">@Localizer["Nav_Login"]</a>
+                            </li>
+                            <li class="nav-item">
+                            <a class="btn btn-sm btn-primary" asp-controller="Account" asp-action="Register">@Localizer["Nav_Register"]</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
+    <div class="container py-3">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - MeetingBooking.Api - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <footer class="border-top footer text-muted py-3 mt-4">
+        <div class="container d-flex justify-content-between">
+            <span>&copy; 2026 MeetingBooking</span>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

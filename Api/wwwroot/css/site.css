@@ -1,31 +1,276 @@
+/* ===== Design tokens ===== */
+:root {
+    --brand-primary: #4F46E5;
+    --brand-primary-dark: #4338CA;
+    --brand-primary-rgb: 79, 70, 229;
+    --brand-accent: #14B8A6;
+    --brand-danger: #EF4444;
+    --surface: #FFFFFF;
+    --surface-muted: #F6F6FC;
+    --text-primary: #1E1B2E;
+    --text-muted: #6B7280;
+    --radius-sm: 10px;
+    --radius-md: 16px;
+    --shadow-sm: 0 1px 3px rgba(30, 27, 46, 0.06), 0 1px 2px rgba(30, 27, 46, 0.08);
+    --shadow-md: 0 8px 24px rgba(30, 27, 46, 0.08);
+    /* Re-skin Bootstrap via its own CSS variables */
+    --bs-primary: var(--brand-primary);
+    --bs-primary-rgb: var(--brand-primary-rgb);
+    --bs-link-color: var(--brand-primary);
+    --bs-link-hover-color: var(--brand-primary-dark);
+    --bs-body-bg: var(--surface-muted);
+    --bs-body-color: var(--text-primary);
+    --bs-border-radius: var(--radius-sm);
+    --bs-border-radius-lg: var(--radius-md);
+    --bs-font-sans-serif: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
 html {
-  font-size: 14px;
+    font-size: 15px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
+    html {
+        font-size: 16px;
+    }
 }
 
 body {
-  margin-bottom: 60px;
+    font-family: var(--bs-font-sans-serif);
+    background: var(--surface-muted);
+    color: var(--text-primary);
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+h1, h2, h3, h4 {
+    font-weight: 700;
+    letter-spacing: -0.01em;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+.text-muted {
+    color: var(--text-muted) !important;
 }
+
+/* ===== Navbar ===== */
+.navbar {
+    background: var(--surface) !important;
+    box-shadow: var(--shadow-sm);
+}
+
+.navbar-brand {
+    font-weight: 800;
+    color: var(--brand-primary) !important;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+    .navbar-brand .brand-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--brand-accent);
+        display: inline-block;
+    }
+
+.navbar .nav-link {
+    font-weight: 500;
+    color: var(--text-muted) !important;
+    padding: 0.5rem 0.9rem !important;
+    border-radius: var(--radius-sm);
+    transition: background-color .15s ease, color .15s ease;
+}
+
+    .navbar .nav-link:hover,
+    .navbar .nav-link.active {
+        color: var(--brand-primary) !important;
+        background: rgba(var(--brand-primary-rgb), 0.08);
+    }
+
+/* ===== Buttons ===== */
+.btn {
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    padding: 0.55rem 1.1rem;
+}
+
+.btn-primary {
+    background: var(--brand-primary);
+    border-color: var(--brand-primary);
+}
+
+    .btn-primary:hover {
+        background: var(--brand-primary-dark);
+        border-color: var(--brand-primary-dark);
+    }
+
+.btn-outline-primary {
+    color: var(--brand-primary);
+    border-color: var(--brand-primary);
+}
+
+    .btn-outline-primary:hover {
+        background: var(--brand-primary);
+        border-color: var(--brand-primary);
+    }
+
+.btn-lg {
+    padding: 0.8rem 1.6rem;
+    border-radius: var(--radius-md);
+}
+
+/* ===== Cards / surfaces ===== */
+.card, .surface-card {
+    background: var(--surface);
+    border: 1px solid rgba(30, 27, 46, 0.06);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+}
+
+.surface-card {
+    padding: 1.5rem;
+}
+
+/* ===== Tables ===== */
+.table {
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+    .table thead th {
+        background: var(--surface-muted);
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        border-bottom: none;
+        font-weight: 700;
+    }
+
+    .table td, .table th {
+        vertical-align: middle;
+        padding: 0.9rem 1rem;
+    }
+
+/* ===== Badges ===== */
+.badge {
+    border-radius: 999px;
+    padding: 0.4em 0.8em;
+    font-weight: 600;
+}
+
+/* ===== Booking slot grid (Schedule page) ===== */
+.slot-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 0.9rem;
+}
+
+.slot-card {
+    border-radius: var(--radius-md);
+    border: 1.5px solid transparent;
+    padding: 1rem 1.1rem;
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    transition: transform .15s ease, box-shadow .15s ease;
+}
+
+    .slot-card.slot-free {
+        border-color: rgba(20, 184, 166, 0.35);
+    }
+
+        .slot-card.slot-free:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+    .slot-card.slot-booked {
+        background: var(--surface-muted);
+        opacity: 0.75;
+    }
+
+.slot-time {
+    font-weight: 700;
+    font-size: 1.05rem;
+}
+
+.slot-card form {
+    margin: 0;
+}
+
+.slot-card .btn {
+    width: 100%;
+}
+
+/* ===== Hero (Home page) ===== */
+.hero {
+    background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%);
+    color: #fff;
+    border-radius: var(--radius-md);
+    padding: 3.5rem 2rem;
+    box-shadow: var(--shadow-md);
+}
+
+    .hero p {
+        color: rgba(255,255,255,0.85);
+        font-size: 1.1rem;
+    }
+
+    .hero .btn-outline-primary {
+        color: #fff;
+        border-color: rgba(255,255,255,0.6);
+    }
+
+        .hero .btn-outline-primary:hover {
+            background: rgba(255,255,255,0.15);
+            border-color: #fff;
+        }
+.hero-subtitle {
+    max-width: 560px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* ===== Alerts ===== */
+.alert {
+    border-radius: var(--radius-sm);
+    border: none;
+}
+
+/* ===== Forms ===== */
+.form-control, .form-select {
+    border-radius: var(--radius-sm);
+    border-color: rgba(30, 27, 46, 0.12);
+    padding: 0.6rem 0.85rem;
+}
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--brand-primary);
+        box-shadow: 0 0 0 0.2rem rgba(var(--brand-primary-rgb), 0.15);
+    }
+
+label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+}
+
+footer.footer {
+    background: transparent;
+    color: var(--text-muted);
+    border-top: 1px solid rgba(30,27,46,0.08) !important;
+}
+
+
+/* ===== Compact forms ===== */
+.form-narrow {
+    max-width: 480px;
+}
+
+    .form-narrow .form-text {
+        font-size: 0.85rem;
+    }

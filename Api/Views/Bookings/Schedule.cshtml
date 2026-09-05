@@ -1,6 +1,20 @@
-﻿@model MeetingBooking.Application.Bookings.ResourceScheduleDto
+﻿@inject IStringLocalizer<SharedResource> Localizer
+@model MeetingBooking.Application.Bookings.ResourceScheduleDto
 
-<h2>@Model.ResourceName — @Model.Date.ToString("dd.MM.yyyy")</h2>
+<div class="d-flex justify-content-start align-items-start flex-wrap gap-5 mb-4">
+    <div>
+        <h2 class="mb-1">@Model.ResourceName</h2>
+        <p class="text-muted mb-0">@Model.Date.ToString("dddd, dd MMMM yyyy")</p>
+    </div>
+    <form method="get" class="d-flex gap-2 align-items-end">
+        <input type="hidden" name="resourceId" value="@Model.ResourceId" />
+        <div>
+            <label class="d-block">@Localizer["Common_Date"]</label>
+            <input type="date" name="date" value="@Model.Date.ToString("yyyy-MM-dd")" class="form-control" />
+        </div>
+        <button type="submit" class="btn btn-primary">@Localizer["Booking_ShowButton"]</button>
+    </form>
+</div>
 
 @if (TempData["Success"] != null)
 {
@@ -11,47 +25,30 @@
     <div class="alert alert-danger">@TempData["Error"]</div>
 }
 
-<form method="get" class="mb-3 d-flex gap-2 align-items-end">
-    <input type="hidden" name="resourceId" value="@Model.ResourceId" />
-    <div>
-        <label>Date</label>
-        <input type="date" name="date" value="@Model.Date.ToString("yyyy-MM-dd")" class="form-control" />
-    </div>
-    <button type="submit" class="btn btn-secondary">Show</button>
-</form>
-
-<table class="table" id="scheduleTable">
-    <thead><tr><th>Time</th><th>Status</th><th></th></tr></thead>
-    <tbody>
-        @foreach (var slot in Model.Slots)
-        {
-            <tr data-timeslot-id="@slot.TimeSlotId">
-                <td>@slot.StartTime.ToString("HH:mm") - @slot.EndTime.ToString("HH:mm")</td>
-                <td class="status-cell">
-                    @if (slot.IsBooked)
-                    {
-                        <span class="badge bg-danger">Booked</span>
-                    }
-                    else
-                    {
-                        <span class="badge bg-success">Free</span>
-                    }
-                </td>
-                <td>
-                    @if (!slot.IsBooked)
-                    {
-                        <form asp-action="Book" method="post" style="display:inline">
-                            <input type="hidden" name="resourceId" value="@Model.ResourceId" />
-                            <input type="hidden" name="timeSlotId" value="@slot.TimeSlotId" />
-                            <input type="hidden" name="date" value="@Model.Date.ToString("yyyy-MM-dd")" />
-                            <button type="submit" class="btn btn-sm btn-primary">Book</button>
-                        </form>
-                    }
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="slot-grid" id="scheduleGrid">
+    @foreach (var slot in Model.Slots)
+    {
+        <div class="slot-card @(slot.IsBooked ? "slot-booked" : "slot-free")" data-timeslot-id="@slot.TimeSlotId">
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="slot-time">@slot.StartTime.ToString("HH:mm") – @slot.EndTime.ToString("HH:mm")</span>
+                <span class="badge status-badge @(slot.IsBooked ? "bg-danger" : "bg-success")">
+                    @(slot.IsBooked ? Localizer["Booking_BookedStatus"] : Localizer["Booking_FreeStatus"])
+                </span>
+            </div>
+            <div class="slot-action">
+                @if (!slot.IsBooked)
+                {
+                    <form asp-action="Book" method="post">
+                        <input type="hidden" name="resourceId" value="@Model.ResourceId" />
+                        <input type="hidden" name="timeSlotId" value="@slot.TimeSlotId" />
+                        <input type="hidden" name="date" value="@Model.Date.ToString("yyyy-MM-dd")" />
+                        <button type="submit" class="btn btn-primary btn-sm">@Localizer["Booking_BookButton"]</button>
+                    </form>
+                }
+            </div>
+        </div>
+    }
+</div>
 
 @section Scripts {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
@@ -65,17 +62,21 @@
             .build();
 
         connection.on("SlotBooked", (data) => {
-      
             if (data.date !== currentDate) return;
 
-            const row = document.querySelector(`tr[data-timeslot-id="${data.timeSlotId}"]`);
-            if (!row) return;
+            const card = document.querySelector(`.slot-card[data-timeslot-id="${data.timeSlotId}"]`);
+            if (!card) return;
 
-            const statusCell = row.querySelector(".status-cell");
-            statusCell.innerHTML = '<span class="badge bg-danger">Booked</span>';
+            card.classList.remove("slot-free");
+            card.classList.add("slot-booked");
 
-            const actionCell = row.cells[2];
-            actionCell.innerHTML = "";
+            const badge = card.querySelector(".status-badge");
+            badge.textContent = '@Localizer["Booking_BookedStatus"]';
+            badge.classList.remove("bg-success");
+            badge.classList.add("bg-danger");
+
+            const action = card.querySelector(".slot-action");
+            action.innerHTML = "";
         });
 
         connection.start()
