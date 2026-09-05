@@ -12,6 +12,10 @@
     <link rel="stylesheet" href="~/MeetingBooking.Api.styles.css" asp-append-version="true" />
 </head>
 <body>
+    @{
+        var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+        string ActiveIf(string controller) => currentController == controller ? "active" : "";
+    }
     <header>
         <nav class="navbar navbar-expand-sm navbar-light">
             <div class="container-fluid">
@@ -25,20 +29,22 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link @ActiveIf("Home")" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         @if (User.Identity?.IsAuthenticated == true)
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Resources" asp-action="Index">Resources</a>
+                                <a class="nav-link @ActiveIf("Resources")" asp-controller="Resources" asp-action="Index">Resources</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Bookings" asp-action="MyBookings">My Bookings</a>
+                                <a class="nav-link @ActiveIf("Bookings")" asp-controller="Bookings" asp-action="MyBookings">
+                                    @(User.IsInRole("Admin") ? "All Bookings" : "My Bookings")
+                                </a>
                             </li>
                             @if (User.IsInRole("Admin"))
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link" asp-controller="TimeSlots" asp-action="Index">Time Slots</a>
+                                    <a class="nav-link @ActiveIf("TimeSlots")" asp-controller="TimeSlots" asp-action="Index">Time Slots</a>
                                 </li>
                             }
                         }
@@ -56,7 +62,7 @@
                         else
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Account" asp-action="Login">Login</a>
+                                <a class="nav-link @ActiveIf("Account")" asp-controller="Account" asp-action="Login">Login</a>
                             </li>
                             <li class="nav-item">
                                 <a class="btn btn-sm btn-primary" asp-controller="Account" asp-action="Register">Register</a>
@@ -76,7 +82,6 @@
     <footer class="border-top footer text-muted py-3 mt-4">
         <div class="container d-flex justify-content-between">
             <span>&copy; 2026 MeetingBooking</span>
-            <a asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
