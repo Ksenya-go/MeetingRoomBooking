@@ -1,21 +1,22 @@
-﻿@model MeetingBooking.Application.Resources.CreateResourceCommand
-<h2>Create Resource</h2>
+﻿@inject IStringLocalizer<SharedResource> Localizer
+@model MeetingBooking.Application.Resources.CreateResourceCommand
+<h2>@Localizer["MeetingRooms_CreateTitle"]</h2>
 <div class="surface-card form-narrow">
     <form asp-action="Create" method="post">
         <div class="mb-3">
-            <label>Room name</label>
-            <input name="Name" class="form-control" placeholder="e.g. Conference Room A" />
+            <label>@Localizer["MeetingRooms_Name"]</label>
+            <input name="Name" class="form-control" placeholder="@Localizer["Resources_RoomExamplePlaceholder"]" />
         </div>
         <div class="mb-3">
-            <label>Description</label>
-            <input name="Description" class="form-control" placeholder="Optional details about this room" />
-            <div class="form-text text-muted">Shown to users when they view the room. Optional.</div>
+            <label>@Localizer["MeetingRooms_Description"]</label>
+            <input name="Description" class="form-control" placeholder="@Localizer["Resources_DescriptionPlaceholder"]" />
+            <div class="form-text text-muted">@Localizer["Resources_DescriptionHelp"]</div>
         </div>
         <div class="mb-3">
-            <label>Capacity</label>
-            <input name="Capacity" type="number" min="1" class="form-control" placeholder="Number of people it seats" />
+            <label>@Localizer["MeetingRooms_Capacity"]</label>
+            <input name="Capacity" type="number" min="1" class="form-control" placeholder="@Localizer["Resources_CapacityPlaceholder"]" />
         </div>
         <div asp-validation-summary="All" class="text-danger"></div>
-        <button type="submit" class="btn btn-primary">Create</button>
+        <button type="submit" class="btn btn-primary">@Localizer["Common_CreateButton"]</button>
     </form>
 </div>

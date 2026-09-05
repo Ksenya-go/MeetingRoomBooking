@@ -1,4 +1,5 @@
-﻿﻿<!DOCTYPE html>
+﻿@inject IStringLocalizer<SharedResource> Localizer
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -29,22 +30,22 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link @ActiveIf("Home")" asp-controller="Home" asp-action="Index">Home</a>
+                        <a class="nav-link @ActiveIf("Home")" asp-controller="Home" asp-action="Index">@Localizer["Nav_Home"]</a>
                         </li>
                         @if (User.Identity?.IsAuthenticated == true)
                         {
                             <li class="nav-item">
-                                <a class="nav-link @ActiveIf("Resources")" asp-controller="Resources" asp-action="Index">Resources</a>
+                                <a class="nav-link @ActiveIf("Resources")" asp-controller="Resources" asp-action="Index">@Localizer["Nav_MeetingRooms"]</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link @ActiveIf("Bookings")" asp-controller="Bookings" asp-action="MyBookings">
-                                    @(User.IsInRole("Admin") ? "All Bookings" : "My Bookings")
+                                    @(User.IsInRole("Admin") ? Localizer["Nav_AllBookings"] : Localizer["Nav_MyBookings"])
                                 </a>
                             </li>
                             @if (User.IsInRole("Admin"))
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link @ActiveIf("TimeSlots")" asp-controller="TimeSlots" asp-action="Index">Time Slots</a>
+                                    <a class="nav-link @ActiveIf("TimeSlots")" asp-controller="TimeSlots" asp-action="Index">@Localizer["Nav_TimeSlots"]</a>
                                 </li>
                             }
                         }
@@ -55,17 +56,17 @@
                             <li class="nav-item d-flex align-items-center gap-3">
                                 <span class="text-muted small">@User.Identity.Name</span>
                                 <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
-                                    <button type="submit" class="btn btn-sm btn-outline-primary">Logout</button>
+                                    <button type="submit" class="btn btn-sm btn-danger">@Localizer["Nav_Logout"]</button>
                                 </form>
                             </li>
                         }
                         else
                         {
                             <li class="nav-item">
-                                <a class="nav-link @ActiveIf("Account")" asp-controller="Account" asp-action="Login">Login</a>
+                                <a class="nav-link @ActiveIf("Account")" asp-controller="Account" asp-action="Login">@Localizer["Nav_Login"]</a>
                             </li>
                             <li class="nav-item">
-                                <a class="btn btn-sm btn-primary" asp-controller="Account" asp-action="Register">Register</a>
+                            <a class="btn btn-sm btn-primary" asp-controller="Account" asp-action="Register">@Localizer["Nav_Register"]</a>
                             </li>
                         }
                     </ul>

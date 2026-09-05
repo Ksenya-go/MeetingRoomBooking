@@ -1,21 +1,22 @@
-﻿@model IReadOnlyList<MeetingBooking.Application.Bookings.BookingListItemDto>
-<h2>@(User.IsInRole("Admin") ? "All Bookings" : "My Bookings")</h2>
+﻿@inject IStringLocalizer<SharedResource> Localizer
+@model IReadOnlyList<MeetingBooking.Application.Bookings.BookingListItemDto>
+<h2>@(User.IsInRole("Admin") ? Localizer["Booking_AllBookingsTitle"] : Localizer["Booking_MyBookingsTitle"])</h2>
 <table class="table">
     <thead>
-        <tr>
-            <th>Resource</th>
-            <th>Date</th>
-            <th>Time</th>
+        <tr class="text-center">
+            <th>@Localizer["MeetingRooms_Name"]</th>
+            <th>@Localizer["Common_Date"]</th>
+            <th>@Localizer["Common_Time"]</th>
             @if (User.IsInRole("Admin"))
             {
-                <th>User</th>
+                <th>@Localizer["Common_User"]</th>
             }
         </tr>
     </thead>
     <tbody>
         @foreach (var b in Model)
         {
-            <tr>
+            <tr class="text-center">
                 <td>@b.ResourceName</td>
                 <td>@b.Date.ToString("dd.MM.yyyy")</td>
                 <td>@b.StartTime.ToString("HH:mm") - @b.EndTime.ToString("HH:mm")</td>

@@ -1,32 +1,9 @@
-﻿﻿@{
-ViewData["Title"] = "Home";
+﻿@inject IStringLocalizer<SharedResource> Localizer
+﻿@{
+ViewData["Title"] = Localizer["Nav_Home"];
 }
 
 <div class="hero text-center">
-    <h1 class="display-5 mb-3">Book meeting rooms without the double-booking headaches</h1>
-    <p class="mx-auto" style="max-width: 560px;">
-        See live availability across every room and reserve a slot in two clicks —
-        everyone watching the schedule sees updates instantly.
-    </p>
-</div>
-
-<div class="row g-4 mt-1">
-    <div class="col-md-4">
-        <div class="surface-card h-100">
-            <h5>Real-time status</h5>
-            <p class="text-muted mb-0">Slot statuses update live for everyone viewing the schedule — no page refresh.</p>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="surface-card h-100">
-            <h5>No double-booking</h5>
-            <p class="text-muted mb-0">Concurrent requests for the same slot are resolved safely — exactly one booking wins.</p>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="surface-card h-100">
-            <h5>Role-based access</h5>
-            <p class="text-muted mb-0">Admins manage rooms and time slots; everyone else books what's available.</p>
-        </div>
-    </div>
+    <h1 class="display-5 mb-3">@Localizer["Home_Title"]</h1>
+    <p class="hero-subtitle">@Localizer["Home_Subtitle"]</p>
 </div>

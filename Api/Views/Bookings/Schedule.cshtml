@@ -1,6 +1,7 @@
-﻿@model MeetingBooking.Application.Bookings.ResourceScheduleDto
+﻿@inject IStringLocalizer<SharedResource> Localizer
+@model MeetingBooking.Application.Bookings.ResourceScheduleDto
 
-<div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+<div class="d-flex justify-content-start align-items-start flex-wrap gap-5 mb-4">
     <div>
         <h2 class="mb-1">@Model.ResourceName</h2>
         <p class="text-muted mb-0">@Model.Date.ToString("dddd, dd MMMM yyyy")</p>
@@ -8,10 +9,10 @@
     <form method="get" class="d-flex gap-2 align-items-end">
         <input type="hidden" name="resourceId" value="@Model.ResourceId" />
         <div>
-            <label class="d-block">Date</label>
+            <label class="d-block">@Localizer["Common_Date"]</label>
             <input type="date" name="date" value="@Model.Date.ToString("yyyy-MM-dd")" class="form-control" />
         </div>
-        <button type="submit" class="btn btn-outline-primary">Show</button>
+        <button type="submit" class="btn btn-primary">@Localizer["Booking_ShowButton"]</button>
     </form>
 </div>
 
@@ -31,7 +32,7 @@
             <div class="d-flex justify-content-between align-items-center">
                 <span class="slot-time">@slot.StartTime.ToString("HH:mm") – @slot.EndTime.ToString("HH:mm")</span>
                 <span class="badge status-badge @(slot.IsBooked ? "bg-danger" : "bg-success")">
-                    @(slot.IsBooked ? "Booked" : "Free")
+                    @(slot.IsBooked ? Localizer["Booking_BookedStatus"] : Localizer["Booking_FreeStatus"])
                 </span>
             </div>
             <div class="slot-action">
@@ -41,7 +42,7 @@
                         <input type="hidden" name="resourceId" value="@Model.ResourceId" />
                         <input type="hidden" name="timeSlotId" value="@slot.TimeSlotId" />
                         <input type="hidden" name="date" value="@Model.Date.ToString("yyyy-MM-dd")" />
-                        <button type="submit" class="btn btn-primary btn-sm">Book this slot</button>
+                        <button type="submit" class="btn btn-primary btn-sm">@Localizer["Booking_BookButton"]</button>
                     </form>
                 }
             </div>
@@ -70,7 +71,7 @@
             card.classList.add("slot-booked");
 
             const badge = card.querySelector(".status-badge");
-            badge.textContent = "Booked";
+            badge.textContent = '@Localizer["Booking_BookedStatus"]';
             badge.classList.remove("bg-success");
             badge.classList.add("bg-danger");
 
