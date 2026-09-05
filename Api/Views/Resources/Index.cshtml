@@ -5,6 +5,10 @@
 {
     <a asp-action="Create" class="btn btn-primary mb-3">@Localizer["MeetingRooms_AddButton"]</a>
 }
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
 <table class="table">
     <thead>
         <tr class="text-center">
