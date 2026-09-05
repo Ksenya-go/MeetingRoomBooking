@@ -42,15 +42,25 @@ public class ResourcesHandler :
         return Result.Ok();
     }
 
-    public async ValueTask<Result> Handle(DeleteResourceCommand request, CancellationToken 
-        cancellationToken)
+    public async ValueTask<Result> Handle(DeleteResourceCommand request, CancellationToken cancellationToken)
     {
         var resource = await _db.Resources.FirstOrDefaultAsync(r => r.Id == request.Id, cancellationToken);
         if (resource is null)
         {
             return Result.Fail($"Resource {request.Id} not found.");
         }
-        
+
+        var today = DateOnly.FromDateTime(DateTime.UtcNow.Date);
+
+        var hasFutureBookings = await _db.Bookings
+            .AnyAsync(b => b.ResourceId == request.Id && b.Date >= today, cancellationToken);
+
+        if (hasFutureBookings)
+        {
+            return Result.Fail(
+                "Cannot remove this resource: it has upcoming bookings. Cancel or wait for them to pass first.");
+        }
+
         resource.Deactivate();
         await _db.SaveChangesAsync(cancellationToken);
         return Result.Ok();

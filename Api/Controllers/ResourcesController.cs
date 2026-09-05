@@ -44,7 +44,13 @@ public class ResourcesController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
-        await _sender.Send(new DeleteResourceCommand(id), cancellationToken);
+        var result = await _sender.Send(new DeleteResourceCommand(id), cancellationToken);
+
+        if (result.IsFailed)
+        {
+            TempData["Error"] = string.Join("; ", result.Errors.Select(e => e.Message));
+        }
+
         return RedirectToAction(nameof(Index));
     }
 
