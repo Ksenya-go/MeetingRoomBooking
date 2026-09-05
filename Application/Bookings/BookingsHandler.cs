@@ -15,15 +15,20 @@ public class BookingsHandler : IRequestHandler<BookSlotCommand, Result<Guid>>,
     private readonly IApplicationDbContext _db;
     private readonly ICurrentUserService _currentUser;
     private readonly IBookingNotifier _notifier;
+    
+    private readonly IUserLookupService _userLookup;
+
 
     public BookingsHandler(
-        IApplicationDbContext db,
-        ICurrentUserService currentUser,
-        IBookingNotifier notifier)
+     IApplicationDbContext db,
+     ICurrentUserService currentUser,
+     IBookingNotifier notifier,
+     IUserLookupService userLookup)
     {
         _db = db;
         _currentUser = currentUser;
         _notifier = notifier;
+        _userLookup = userLookup;
     }
 
     public async ValueTask<Result<Guid>> Handle(BookSlotCommand request, CancellationToken cancellationToken)
@@ -60,12 +65,21 @@ public class BookingsHandler : IRequestHandler<BookSlotCommand, Result<Guid>>,
             query = query.Where(b => b.UserId == request.UserId);
         }
 
-        var bookings = await query
+        var rows = await query
             .OrderByDescending(b => b.Date)
             .Join(_db.Resources, b => b.ResourceId, r => r.Id, (b, r) => new { b, r })
-            .Join(_db.TimeSlots, x => x.b.TimeSlotId, t => t.Id, (x, t) => new BookingListItemDto(
-                x.b.Id, x.r.Name, t.StartTime, t.EndTime, x.b.Date, x.b.UserId))
+            .Join(_db.TimeSlots, x => x.b.TimeSlotId, t => t.Id, (x, t) =>
+                new { x.b.Id, x.r.Name, t.StartTime, t.EndTime, x.b.Date, x.b.UserId })
             .ToListAsync(cancellationToken);
+
+        var displayNames = await _userLookup.GetDisplayNamesAsync(
+            rows.Select(r => r.UserId), cancellationToken);
+
+        var bookings = rows
+            .Select(r => new BookingListItemDto(
+                r.Id, r.Name, r.StartTime, r.EndTime, r.Date, r.UserId,
+                displayNames.GetValueOrDefault(r.UserId, r.UserId)))
+            .ToList();
 
         return Result.Ok((IReadOnlyList<BookingListItemDto>)bookings);
     }

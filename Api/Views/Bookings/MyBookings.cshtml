@@ -21,7 +21,7 @@
                 <td>@b.StartTime.ToString("HH:mm") - @b.EndTime.ToString("HH:mm")</td>
                 @if (User.IsInRole("Admin"))
                 {
-                    <td>@b.UserId</td>
+                    <td>@b.UserDisplayName</td>
                 }
             </tr>
         }

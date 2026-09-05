@@ -15,7 +15,7 @@ builder.Services.AddScoped<IApplicationDbContext>(provider =>
     provider.GetRequiredService<MeetingBookingDbContext>());
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IBookingNotifier, SignalRBookingNotifier>();
-
+builder.Services.AddScoped<IUserLookupService, UserLookupService>();
 builder.Services
     .AddIdentity<ApplicationUser, IdentityRole>(options =>
     {
