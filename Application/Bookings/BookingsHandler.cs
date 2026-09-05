@@ -5,12 +5,14 @@ using MeetingBooking.Application.Common.Interfaces;
 using MeetingBooking.Domain;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using X.PagedList;
 
 namespace MeetingBooking.Application.Bookings;
 
-public class BookingsHandler : IRequestHandler<BookSlotCommand, Result<Guid>>, 
+public class BookingsHandler :
+    IRequestHandler<BookSlotCommand, Result<Guid>>,
     IRequestHandler<GetResourceScheduleQuery, Result<ResourceScheduleDto>>,
-    IRequestHandler<GetBookingsQuery, Result<IReadOnlyList<BookingListItemDto>>>
+    IRequestHandler<GetBookingsQuery, Result<IPagedList<BookingListItemDto>>>
 {
     private readonly IApplicationDbContext _db;
     private readonly ICurrentUserService _currentUser;
@@ -56,7 +58,7 @@ public class BookingsHandler : IRequestHandler<BookSlotCommand, Result<Guid>>,
         return ex.InnerException is SqlException sqlEx &&
                (sqlEx.Number == 2601 || sqlEx.Number == 2627);
     }
-    public async ValueTask<Result<IReadOnlyList<BookingListItemDto>>> Handle(GetBookingsQuery request, CancellationToken cancellationToken)
+    public async ValueTask<Result<IPagedList<BookingListItemDto>>> Handle(GetBookingsQuery request, CancellationToken cancellationToken)
     {
         var query = _db.Bookings.AsQueryable();
 
@@ -65,11 +67,19 @@ public class BookingsHandler : IRequestHandler<BookSlotCommand, Result<Guid>>,
             query = query.Where(b => b.UserId == request.UserId);
         }
 
-        var rows = await query
+        var baseQuery = query
             .OrderByDescending(b => b.Date)
             .Join(_db.Resources, b => b.ResourceId, r => r.Id, (b, r) => new { b, r })
             .Join(_db.TimeSlots, x => x.b.TimeSlotId, t => t.Id, (x, t) =>
-                new { x.b.Id, x.r.Name, t.StartTime, t.EndTime, x.b.Date, x.b.UserId })
+                new { x.b.Id, x.r.Name, t.StartTime, t.EndTime, x.b.Date, x.b.UserId });
+
+       
+        var totalCount = await baseQuery.CountAsync(cancellationToken);
+
+       
+        var rows = await baseQuery
+            .Skip((request.PageNumber - 1) * request.PageSize)
+            .Take(request.PageSize)
             .ToListAsync(cancellationToken);
 
         var displayNames = await _userLookup.GetDisplayNamesAsync(
@@ -81,8 +91,11 @@ public class BookingsHandler : IRequestHandler<BookSlotCommand, Result<Guid>>,
                 displayNames.GetValueOrDefault(r.UserId, r.UserId)))
             .ToList();
 
-        return Result.Ok((IReadOnlyList<BookingListItemDto>)bookings);
+        var pagedList = new StaticPagedList<BookingListItemDto>(bookings, request.PageNumber, request.PageSize, totalCount);
+
+        return Result.Ok((IPagedList<BookingListItemDto>)pagedList);
     }
+
     public async ValueTask<Result<ResourceScheduleDto>> Handle(GetResourceScheduleQuery request, CancellationToken cancellationToken)
     {
         var resource = await _db.Resources

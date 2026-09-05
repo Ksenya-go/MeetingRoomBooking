@@ -1,5 +1,6 @@
-﻿@inject IStringLocalizer<SharedResource> Localizer
-@model IReadOnlyList<MeetingBooking.Application.Bookings.BookingListItemDto>
+﻿@using X.PagedList.Mvc.Core
+@model X.PagedList.IPagedList<MeetingBooking.Application.Bookings.BookingListItemDto>
+
 <h2>@(User.IsInRole("Admin") ? Localizer["Booking_AllBookingsTitle"] : Localizer["Booking_MyBookingsTitle"])</h2>
 <table class="table">
     <thead>
@@ -28,3 +29,14 @@
         }
     </tbody>
 </table>
+<div class="d-flex justify-content-center mb-5">
+    @Html.PagedListPager(
+        Model,
+        page => Url.Action("MyBookings", new { page }),
+        new PagedListRenderOptions
+        {
+            LiElementClasses = new[] { "page-item" },
+            PageClasses = new[] { "page-link" },
+            UlElementClasses = new[] { "pagination" }
+        })
+</div>

@@ -52,12 +52,12 @@ public class BookingsController : Controller
         return RedirectToAction(nameof(Schedule), new { resourceId, date });
     }
 
-    public async Task<IActionResult> MyBookings(CancellationToken cancellationToken)
+    public async Task<IActionResult> MyBookings(int page = 1, CancellationToken cancellationToken = default)
     {
         var isAdmin = User.IsInRole("Admin");
         var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
 
-        var result = await _sender.Send(new GetBookingsQuery(userId, isAdmin), cancellationToken);
+        var result = await _sender.Send(new GetBookingsQuery(userId, isAdmin, page, PageSize: 9), cancellationToken);
         return View(result.Value);
     }
 

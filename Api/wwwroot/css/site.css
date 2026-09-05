@@ -35,6 +35,10 @@ html {
     }
 }
 
+footer {
+    flex-shrink: 0;
+}
+
 body {
     font-family: var(--bs-font-sans-serif);
     background: var(--surface-muted);
@@ -262,9 +266,12 @@ label {
 footer.footer {
     background: transparent;
     color: var(--text-muted);
+    margin-top: 5rem;
     border-top: 1px solid rgba(30,27,46,0.08) !important;
 }
-
+.main-content {
+    min-height: 60vh;
+}
 
 /* ===== Compact forms ===== */
 .form-narrow {
@@ -274,3 +281,26 @@ footer.footer {
     .form-narrow .form-text {
         font-size: 0.85rem;
     }
+
+/* ===== Pagination ===== */
+.pagination {
+    margin: 0;
+}
+
+.page-link {
+    border-radius: var(--radius-sm) !important;
+    margin: 0 0.15rem;
+    color: var(--text-muted);
+    border-color: rgba(30, 27, 46, 0.1);
+}
+
+    .page-link:hover {
+        color: var(--brand-primary);
+        background: rgba(var(--brand-primary-rgb), 0.08);
+        border-color: rgba(var(--brand-primary-rgb), 0.2);
+    }
+
+.page-item.active .page-link {
+    background: var(--brand-primary);
+    border-color: var(--brand-primary);
+}
