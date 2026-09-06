@@ -1,8 +1,9 @@
 ﻿using Mediator;
+using MeetingBooking.Application.TimeSlots;
+using MeetingBooking.Application.TimeSlots.Commands;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MeetingBooking.Application.TimeSlots.Commands;
-using MeetingBooking.Application.TimeSlots.Queries;
+
 
 namespace MeetingBooking.Api.Controllers;
 
@@ -16,9 +17,9 @@ public class TimeSlotsController : Controller
         _sender = sender;
     }
 
-    public async Task<IActionResult> Index(CancellationToken cancellationToken)
+    public async Task<IActionResult> Index(int page = 1, CancellationToken cancellationToken = default)
     {
-        var result = await _sender.Send(new GetAllTimeSlotsQuery(), cancellationToken);
+        var result = await _sender.Send(new GetAllTimeSlotsQuery(page, PageSize: 7), cancellationToken);
         return View(result.Value);
     }
 

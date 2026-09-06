@@ -2,16 +2,16 @@
 using Mediator;
 using MeetingBooking.Application.Common.Interfaces;
 using MeetingBooking.Application.TimeSlots.Commands;
-using MeetingBooking.Application.TimeSlots.Queries;
 using MeetingBooking.Domain;
 using Microsoft.EntityFrameworkCore;
+using X.PagedList;
 
 namespace MeetingBooking.Application.TimeSlots;
 
 public class TimeSlotsHandler :
     IRequestHandler<CreateTimeSlotCommand, Result<Guid>>,
     IRequestHandler<DeleteTimeSlotCommand, Result>,
-    IRequestHandler<GetAllTimeSlotsQuery, Result<IReadOnlyList<TimeSlotDto>>>
+    IRequestHandler<GetAllTimeSlotsQuery, Result<IPagedList<TimeSlotDto>>>
 {
     private readonly IApplicationDbContext _db;
 
@@ -43,14 +43,21 @@ public class TimeSlotsHandler :
         return Result.Ok();
     }
 
-    public async ValueTask<Result<IReadOnlyList<TimeSlotDto>>> Handle(GetAllTimeSlotsQuery request, 
-        CancellationToken cancellationToken)
+    public async ValueTask<Result<IPagedList<TimeSlotDto>>> Handle(GetAllTimeSlotsQuery request, CancellationToken cancellationToken)
     {
-        var slots = await _db.TimeSlots
+        var baseQuery = _db.TimeSlots
             .OrderBy(t => t.StartTime)
-            .Select(t => new TimeSlotDto(t.Id, t.StartTime, t.EndTime))
+            .Select(t => new TimeSlotDto(t.Id, t.StartTime, t.EndTime));
+
+        var totalCount = await baseQuery.CountAsync(cancellationToken);
+
+        var slots = await baseQuery
+            .Skip((request.PageNumber - 1) * request.PageSize)
+            .Take(request.PageSize)
             .ToListAsync(cancellationToken);
 
-        return Result.Ok((IReadOnlyList<TimeSlotDto>)slots);
+        var pagedList = new StaticPagedList<TimeSlotDto>(slots, request.PageNumber, request.PageSize, totalCount);
+
+        return Result.Ok((IPagedList<TimeSlotDto>)pagedList);
     }
 }
