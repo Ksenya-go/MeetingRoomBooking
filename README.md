@@ -111,11 +111,16 @@ MeetingRoomBooking.sln
 
 
 ## Real-time updates
+`BookingHub (SignalR)` uses one group per resource `(resource-{id})`. After a successful booking, SignalRBookingNotifier notifies the relevant group — everyone currently viewing that resource's schedule sees the slot status update without refreshing the page.
+Uses Azure SignalR Service in Default mode (not Serverless), connected via `Azure:SignalR:ConnectionString`.
 
-`BookingHub (SignalR)` uses one group per resource (resource-{id}). After a successful booking, SignalRBookingNotifier notifies the relevant group — everyone currently viewing that resource's schedule sees the slot status update without refreshing the page.
+## Roles and authorization
+ASP.NET Core Identity, two roles:
 
-Uses Azure SignalR Service in Default mode (not Serverless), connected via Azure:SignalR:ConnectionString.
-
+| Role      | Capabilities                                                                                                    |
+| --------- | --------------------------------------------------------------------------------------------------------------- |
+| **User**  | View resources and schedules, book available slots, view own bookings                                           |
+| **Admin** | All User capabilities, plus create/edit/delete resources, manage time slots, and view all bookings across users |
 
 
 
