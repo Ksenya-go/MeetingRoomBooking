@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace MeetingBooking.Application.TimeSlots;
+namespace MeetingBooking.Application.TimeSlots.Commands;
 
 public class CreateTimeSlotCommandValidator : AbstractValidator<CreateTimeSlotCommand>
 {
