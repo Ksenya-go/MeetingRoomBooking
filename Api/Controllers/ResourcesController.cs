@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MeetingBooking.Application.Resources;
+using MeetingBooking.Application.Resources.Commands;
 
 namespace MeetingBooking.Api.Controllers;
 

@@ -1,6 +1,8 @@
 ﻿using FluentResults;
 using Mediator;
 using MeetingBooking.Application.Common.Interfaces;
+using MeetingBooking.Application.Resources.Commands;
+using MeetingBooking.Application.Resources.Queries;
 using MeetingBooking.Domain;
 using Microsoft.EntityFrameworkCore;
 
@@ -42,7 +44,8 @@ public class ResourcesHandler :
         return Result.Ok();
     }
 
-    public async ValueTask<Result> Handle(DeleteResourceCommand request, CancellationToken cancellationToken)
+    public async ValueTask<Result> Handle(DeleteResourceCommand request, CancellationToken 
+        cancellationToken)
     {
         var resource = await _db.Resources.FirstOrDefaultAsync(r => r.Id == request.Id, cancellationToken);
         if (resource is null)
@@ -58,7 +61,8 @@ public class ResourcesHandler :
         if (hasFutureBookings)
         {
             return Result.Fail(
-                "Cannot remove this resource: it has upcoming bookings. Cancel or wait for them to pass first.");
+                "Cannot remove this resource: it has upcoming bookings. Cancel or wait for " +
+                "them to pass first.");
         }
 
         resource.Deactivate();
