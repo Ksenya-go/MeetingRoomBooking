@@ -16,9 +16,9 @@ public class ResourcesController : Controller
         _sender = sender;
     }
 
-    public async Task<IActionResult> Index(CancellationToken cancellationToken)
+    public async Task<IActionResult> Index(int page = 1, CancellationToken cancellationToken = default)
     {
-        var result = await _sender.Send(new GetAllResourcesQuery(), cancellationToken);
+        var result = await _sender.Send(new GetAllResourcesQuery(page, PageSize: 10), cancellationToken);
         return View(result.Value);
     }
 
@@ -59,13 +59,13 @@ public class ResourcesController : Controller
     [HttpGet]
     public async Task<IActionResult> Edit(Guid id, CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(new GetAllResourcesQuery(), cancellationToken);
-        var resource = result.Value?.FirstOrDefault(r => r.Id == id);
-
-        if (resource is null)
+        var result = await _sender.Send(new GetResourceByIdQuery(id), cancellationToken);
+        if (result.IsFailed)
+        {
             return NotFound();
-
-        var command = new UpdateResourceCommand(resource.Id, resource.Name, resource.Description, resource.Capacity);
+        }
+      
+        var command = new UpdateResourceCommand(result.Value.Id, result.Value.Name, result.Value.Description, result.Value.Capacity);
         return View(command);
     }
 

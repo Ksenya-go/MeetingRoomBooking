@@ -1,4 +1,5 @@
 ﻿using Mediator;
+using MeetingBooking.Application.Queries.TimeSlots;
 using MeetingBooking.Application.TimeSlots;
 using MeetingBooking.Application.TimeSlots.Commands;
 using Microsoft.AspNetCore.Authorization;
