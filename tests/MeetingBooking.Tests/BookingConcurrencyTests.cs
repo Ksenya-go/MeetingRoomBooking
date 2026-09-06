@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using MeetingBooking.Application.Bookings;
+using MeetingBooking.Application.Bookings.Commands;
 using MeetingBooking.Domain;
 using MeetingBooking.Infrastructure.Persistence;
 using MeetingBooking.Tests.TestDoubles;

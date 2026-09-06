@@ -1,33 +1,14 @@
-using MeetingBooking.Application.Common.Interfaces;
+using MeetingBooking.Infrastructure;
 using MeetingBooking.Infrastructure.Identity;
-using MeetingBooking.Infrastructure.Persistence;
 using MeetingBooking.Infrastructure.Realtime;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 builder.Services.AddControllersWithViews()
     .AddViewLocalization();
-builder.Services.AddDbContext<MeetingBookingDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-builder.Services.AddScoped<IApplicationDbContext>(provider =>
-    provider.GetRequiredService<MeetingBookingDbContext>());
-builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
-builder.Services.AddScoped<IBookingNotifier, SignalRBookingNotifier>();
-builder.Services.AddScoped<IUserLookupService, UserLookupService>();
-builder.Services
-    .AddIdentity<ApplicationUser, IdentityRole>(options =>
-    {
-        options.Password.RequiredLength = 8;
-        options.Password.RequireNonAlphanumeric = false;
-        options.User.RequireUniqueEmail = true;
-    })
-    .AddEntityFrameworkStores<MeetingBookingDbContext>()
-    .AddDefaultTokenProviders();
 
+builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddMediator();
 builder.Services.ConfigureApplicationCookie(options =>
@@ -35,8 +16,6 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.LoginPath = "/Account/Login";
     options.AccessDeniedPath = "/Account/AccessDenied";
 });
-
-builder.Services.AddSignalR().AddAzureSignalR();
 
 
 var app = builder.Build();
