@@ -109,6 +109,16 @@ MeetingRoomBooking.sln
 
 ## Concurrency control
 
+**Requirement**: if two requests try to book the same slot at effectively the same time, exactly one must succeed and the other must receive a clear conflict — never a 500 error, never a silent overwrite.
+
+**Chosen approach**: a unique database constraint, rather than optimistic concurrency (RowVersion) or explicit transactional locking.
+
+A unique index on (ResourceId, TimeSlotId, Date) on the Bookings table (Infrastructure/Persistence/Configurations/BookingConfiguration.cs). The flow in BookingsHandler.Handle(BookSlotCommand ...):
+
+1. A Booking entity is constructed and added to the DbContext
+2. SaveChangesAsync is called
+3. If the unique index is violated, EF Core throws a DbUpdateException wrapping a SqlException with error number 2601 or 2627 — this is caught and converted into Result.Fail(new BookingConflictError(...))
+4. Otherwise, the save succeeds, a SignalR notification is sent, and Result.Ok(bookingId) is returned
 
 ## Real-time updates
 `BookingHub (SignalR)` uses one group per resource `(resource-{id})`. After a successful booking, SignalRBookingNotifier notifies the relevant group — everyone currently viewing that resource's schedule sees the slot status update without refreshing the page.
@@ -121,6 +131,90 @@ ASP.NET Core Identity, two roles:
 | --------- | --------------------------------------------------------------------------------------------------------------- |
 | **User**  | View resources and schedules, book available slots, view own bookings                                           |
 | **Admin** | All User capabilities, plus create/edit/delete resources, manage time slots, and view all bookings across users |
+
+A resource with upcoming active bookings cannot be deleted — a business rule that prevents a room with confirmed future bookings from silently disappearing.
+
+## Azure resources and deployment
+
+| Resource                  | Name                         | Parameters                        |
+| ------------------------- | ---------------------------- | --------------------------------- |
+| **Resource Group**        | `rg-meeting-booking`         | Sweden Central                    |
+| **Azure SQL Database**    | `meetingbooking-sql-kseniia` | Basic tier, 5 DTU, 2 GB           |
+| **Azure SignalR Service** | `meetingbooking-signalr`     | Free F1, Default mode             |
+| **Azure Web App**         | `meetingbooking-app`         | .NET 10, Free F1 App Service plan |
+
+**Deployed application**: https://meetingbooking-app-etd4cxfneecsdkay.swedencentral-01.azurewebsites.net/
+Connection strings and secrets are configured in App Service → Environment variables (Connection strings / Application settings), never stored in the repository.
+
+## Getting started (local)
+Requirements:
+- .NET 10 SDK
+- Access to a SQL Server / Azure SQL instance (LocalDB was not used — configuration targets Azure SQL)
+```
+# 1. Clone
+git clone https://github.com/Ksenya-go/MeetingRoomBooking.git
+cd MeetingRoomBooking
+
+# 2. Configure the database connection (User Secrets)
+cd Api
+dotnet user-secrets init
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Server=tcp:<your-server>.database.windows.net,1433;Database=<your-db>;User ID=<user>;Password=<password>;Encrypt=true;"
+cd ..
+
+# 3. Restore and build
+dotnet restore
+dotnet build
+
+# 4. Apply migrations
+dotnet ef database update --project Infrastructure --startup-project Api
+
+# 5. Run
+dotnet run --project Api
+```
+On first run, IdentitySeeder automatically creates the Admin/User roles and an admin account:
+- Email: admin@meetingbooking.local
+- Password: Admin123!
+Time slots are added through the UI (/TimeSlots, Admin role) — the database is empty by default.
+
+## Testing
+
+dotnet test
+
+| Test                            | Type                    | What it verifies                                                                      |
+| ------------------------------- | ----------------------- | ------------------------------------------------------------------------------------- |
+| `BookingConcurrencyTests`       | Concurrency (real SQL)  | 10 parallel requests for the same slot → exactly 1 success, 9 conflicts, 0 exceptions |
+| `ResourcesHandlerTests`         | Unit (EF Core InMemory) | Resource CRUD, rejecting deletion when future bookings exist                          |
+| `BookingsHandlerScheduleTests`  | Unit (EF Core InMemory) | Correctness of free/booked slot flags in the schedule                                 |
+| `BookSlotCommandValidatorTests` | Unit                    | Rejecting past-dated bookings and empty IDs                                           |
+
+
+Setting up the concurrency test
+
+The test connects to a real SQL Server / Azure SQL database (not in-memory) — this is intentional, since EF Core's InMemory provider does not enforce unique constraints the same way a real SQL engine does.
+
+The connection string is resolved in this priority order:
+
+The TEST_DB_CONNECTION_STRING environment variable
+tests/MeetingBooking.Tests/testsettings.local.json (gitignored, for a developer's own credentials)
+tests/MeetingBooking.Tests/testsettings.json (committed to the repo, contains a CHANGE_ME placeholder)
+
+## About the use of Claude
+
+The task specifies development with active use of Claude Code (the terminal-based agentic tool). Claude Code requires a Claude Pro/Max subscription or a funded Anthropic API key, neither of which was available for this project.
+
+Development was instead carried out through the standard Claude.ai chat interface — used throughout for: designing the Clean Architecture layers, writing the Domain entities and EF Core configurations, designing and explaining the concurrency-control strategy, generating the CQRS commands/queries/handlers, writing the concurrency test and unit tests, debugging DI/SignalR/EF configuration issues, and drafting documentation (CLAUDE.md, this README).
+
+This is a deliberate, disclosed substitution — not an attempt to present chat usage as terminal Claude Code usage. Code generated this way was still reviewed, adapted to the project's specific context, and committed manually after local verification (build, tests, manual UI checks), following the architecture and conventions documented in CLAUDE.md.
+
+## Known limitations
+CI/CD via GitHub Actions (OIDC / federated identity) could not be configured — the Azure for Students subscription lacks the Microsoft Entra ID App Registration permissions required for it. Deployment is done manually via Visual Studio Publish (the attempt-and-revert history for CI/CD is visible in the git log)
+TimeSlot is shared across all resources (not tied to a specific room) — matches the task's wording ("a fixed set of bookable time slots"), but doesn't allow different rooms to have different time grids
+No email confirmation on registration — Identity is configured for simplified registration without email verification, which is acceptable for the scope of this task
+Pagination is implemented only for the bookings list; the resources and time slots lists are not currently paginated (the data volume for this project doesn't require it)
+
+
+
+
 
 
 
