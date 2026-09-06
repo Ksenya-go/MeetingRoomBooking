@@ -1,4 +1,4 @@
-﻿namespace MeetingBooking.Application.Bookings;
+﻿namespace MeetingBooking.Application.Bookings.Dtos;
 
 public record BookingListItemDto(
     Guid Id,

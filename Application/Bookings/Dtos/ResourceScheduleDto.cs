@@ -1,4 +1,4 @@
-﻿namespace MeetingBooking.Application.Bookings;
+﻿namespace MeetingBooking.Application.Bookings.Dtos;
 
 public record TimeSlotStatusDto(Guid TimeSlotId, TimeOnly StartTime, TimeOnly EndTime, bool IsBooked);
 
