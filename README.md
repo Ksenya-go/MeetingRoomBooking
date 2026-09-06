@@ -73,7 +73,7 @@ Booking (a booking of a specific resource's slot on a specific date)
 ```
 
 ## Project structure
-
+```
 MeetingRoomBooking.sln
 ├── Domain/                          # Domain layer
 │   ├── Resource                   
@@ -105,14 +105,16 @@ MeetingRoomBooking.sln
         ├── BookingsHandlerScheduleTests.cs   # schedule unit test (EF Core InMemory)
         ├── BookSlotCommandValidatorTests.cs  # validator unit test
         └── TestDoubles/                      # fake dependency implementations for tests
+```
+
+## Concurrency control
 
 
+## Real-time updates
 
+`BookingHub (SignalR)` uses one group per resource (resource-{id}). After a successful booking, SignalRBookingNotifier notifies the relevant group — everyone currently viewing that resource's schedule sees the slot status update without refreshing the page.
 
-
-
-
-
+Uses Azure SignalR Service in Default mode (not Serverless), connected via Azure:SignalR:ConnectionString.
 
 
 
