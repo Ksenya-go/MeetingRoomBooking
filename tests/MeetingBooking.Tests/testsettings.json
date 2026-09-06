@@ -1,0 +1,3 @@
+{
+  "TestDbConnectionString": "Server=tcp:meetingbooking-sql-kseniia.database.windows.net,1433;Database=meetingbooking-sql-kseniia;User ID=bookingadmin;Password=CHANGE_ME;Encrypt=true;TrustServerCertificate=false;"
+}
