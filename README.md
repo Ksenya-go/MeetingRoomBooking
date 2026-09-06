@@ -174,6 +174,7 @@ dotnet run --project Api
 On first run, IdentitySeeder automatically creates the Admin/User roles and an admin account:
 - Email: admin@meetingbooking.local
 - Password: Admin123!
+  
 Time slots are added through the UI (/TimeSlots, Admin role) — the database is empty by default.
 
 ## Testing
@@ -199,19 +200,14 @@ tests/MeetingBooking.Tests/testsettings.local.json (gitignored, for a developer'
 tests/MeetingBooking.Tests/testsettings.json (committed to the repo, contains a CHANGE_ME placeholder)
 
 ## About the use of Claude
+The task specifies Claude Code, but development was carried out through the standard Claude.ai chat interface due to access limitations.
 
-The task specifies development with active use of Claude Code (the terminal-based agentic tool). Claude Code requires a Claude Pro/Max subscription or a funded Anthropic API key, neither of which was available for this project.
-
-Development was instead carried out through the standard Claude.ai chat interface — used throughout for: designing the Clean Architecture layers, writing the Domain entities and EF Core configurations, designing and explaining the concurrency-control strategy, generating the CQRS commands/queries/handlers, writing the concurrency test and unit tests, debugging DI/SignalR/EF configuration issues, and drafting documentation (CLAUDE.md, this README).
-
-This is a deliberate, disclosed substitution — not an attempt to present chat usage as terminal Claude Code usage. Code generated this way was still reviewed, adapted to the project's specific context, and committed manually after local verification (build, tests, manual UI checks), following the architecture and conventions documented in CLAUDE.md.
+Claude was used for architecture design, implementation, CQRS and concurrency strategy, testing, debugging, and documentation. All generated code was reviewed, adapted to the project, and manually verified through builds, tests, and UI checks, following the conventions documented in CLAUDE.md.
 
 ## Known limitations
-CI/CD via GitHub Actions (OIDC / federated identity) could not be configured — the Azure for Students subscription lacks the Microsoft Entra ID App Registration permissions required for it. Deployment is done manually via Visual Studio Publish (the attempt-and-revert history for CI/CD is visible in the git log)
-TimeSlot is shared across all resources (not tied to a specific room) — matches the task's wording ("a fixed set of bookable time slots"), but doesn't allow different rooms to have different time grids
-No email confirmation on registration — Identity is configured for simplified registration without email verification, which is acceptable for the scope of this task
-Pagination is implemented only for the bookings list; the resources and time slots lists are not currently paginated (the data volume for this project doesn't require it)
-
+- CI/CD via GitHub Actions (OIDC / federated identity) could not be configured — the Azure for Students subscription lacks the Microsoft Entra ID App Registration permissions required for it. Deployment is done manually via Visual Studio Publish (the attempt-and-revert history for CI/CD is visible in the git log)
+- TimeSlot is shared across all resources (not tied to a specific room) — matches the task's wording ("a fixed set of bookable time slots"), but doesn't allow different rooms to have different time grids
+- No email confirmation on registration — Identity is configured for simplified registration without email verification, which is acceptable for the scope of this task
 
 
 
