@@ -1,6 +1,7 @@
 ﻿using FluentResults;
 using Mediator;
 using MeetingBooking.Application.Common.Interfaces;
+using MeetingBooking.Application.Queries.TimeSlots;
 using MeetingBooking.Application.TimeSlots.Commands;
 using MeetingBooking.Domain;
 using Microsoft.EntityFrameworkCore;

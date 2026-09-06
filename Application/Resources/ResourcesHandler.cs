@@ -5,6 +5,7 @@ using MeetingBooking.Application.Resources.Commands;
 using MeetingBooking.Application.Resources.Queries;
 using MeetingBooking.Domain;
 using Microsoft.EntityFrameworkCore;
+using X.PagedList;
 
 namespace MeetingBooking.Application.Resources;
 
@@ -12,7 +13,7 @@ public class ResourcesHandler :
     IRequestHandler<CreateResourceCommand, Result<Guid>>,
     IRequestHandler<UpdateResourceCommand, Result>,
     IRequestHandler<DeleteResourceCommand, Result>,
-    IRequestHandler<GetAllResourcesQuery, Result<IReadOnlyList<ResourceDto>>>
+    IRequestHandler<GetAllResourcesQuery, Result<IPagedList<ResourceDto>>>
 {
     private readonly IApplicationDbContext _db;
 
@@ -70,14 +71,36 @@ public class ResourcesHandler :
         return Result.Ok();
     }
 
-    public async ValueTask<Result<IReadOnlyList<ResourceDto>>> Handle(GetAllResourcesQuery request, 
+    public async ValueTask<Result<IPagedList<ResourceDto>>> Handle(GetAllResourcesQuery request, 
         CancellationToken cancellationToken)
     {
-        var resources = await _db.Resources
+        var baseQuery = _db.Resources
             .Where(r => r.IsActive)
-            .Select(r => new ResourceDto(r.Id, r.Name, r.Description, r.Capacity, r.IsActive))
+            .OrderBy(r => r.Name)
+            .Select(r => new ResourceDto(r.Id, r.Name, r.Description, r.Capacity, r.IsActive));
+
+        var totalCount = await baseQuery.CountAsync(cancellationToken);
+
+        var resources = await baseQuery
+            .Skip((request.PageNumber - 1) * request.PageSize)
+            .Take(request.PageSize)
             .ToListAsync(cancellationToken);
 
-        return Result.Ok((IReadOnlyList<ResourceDto>)resources);
+        var pagedList = new StaticPagedList<ResourceDto>(resources, request.PageNumber, request.PageSize, totalCount);
+
+        return Result.Ok((IPagedList<ResourceDto>)pagedList);
     }
+
+    public async ValueTask<Result<ResourceDto>> Handle(GetResourceByIdQuery request, CancellationToken cancellationToken)
+    {
+        var resource = await _db.Resources.FirstOrDefaultAsync(r => r.Id == request.Id, cancellationToken);
+        if (resource is null)
+            return Result.Fail($"Resource {request.Id} not found.");
+
+        return Result.Ok(new ResourceDto(resource.Id, resource.Name, resource.Description, resource.Capacity, resource.IsActive));
+    }
+
+
+
+
 }
