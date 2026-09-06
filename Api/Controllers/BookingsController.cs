@@ -1,7 +1,8 @@
 ﻿using Mediator;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MeetingBooking.Application.Bookings;
+using MeetingBooking.Application.Bookings.Queries;
+using MeetingBooking.Application.Bookings.Commands;
 
 namespace MeetingBooking.Api.Controllers;
 
