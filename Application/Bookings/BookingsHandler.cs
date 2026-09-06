@@ -1,5 +1,8 @@
 ﻿using FluentResults;
 using Mediator;
+using MeetingBooking.Application.Bookings.Commands;
+using MeetingBooking.Application.Bookings.Dtos;
+using MeetingBooking.Application.Bookings.Queries;
 using MeetingBooking.Application.Common.Errors;
 using MeetingBooking.Application.Common.Interfaces;
 using MeetingBooking.Domain;
@@ -33,9 +36,11 @@ public class BookingsHandler :
         _userLookup = userLookup;
     }
 
-    public async ValueTask<Result<Guid>> Handle(BookSlotCommand request, CancellationToken cancellationToken)
+    public async ValueTask<Result<Guid>> Handle(BookSlotCommand request, CancellationToken 
+        cancellationToken)
     {
-        var booking = new Booking(request.ResourceId, request.TimeSlotId, request.Date, _currentUser.UserId);
+        var booking = new Booking(request.ResourceId, request.TimeSlotId, request.Date, 
+            _currentUser.UserId);
 
         _db.Bookings.Add(booking);
 
@@ -45,10 +50,12 @@ public class BookingsHandler :
         }
         catch (DbUpdateException ex) when (IsUniqueConstraintViolation(ex))
         {
-            return Result.Fail(new BookingConflictError(request.ResourceId, request.TimeSlotId, request.Date));
+            return Result.Fail(new BookingConflictError(request.ResourceId, 
+                request.TimeSlotId, request.Date));
         }
 
-        await _notifier.NotifySlotBookedAsync(request.ResourceId, request.TimeSlotId, request.Date, cancellationToken);
+        await _notifier.NotifySlotBookedAsync(request.ResourceId, request.TimeSlotId, 
+            request.Date, cancellationToken);
 
         return Result.Ok(booking.Id);
     }
@@ -58,7 +65,8 @@ public class BookingsHandler :
         return ex.InnerException is SqlException sqlEx &&
                (sqlEx.Number == 2601 || sqlEx.Number == 2627);
     }
-    public async ValueTask<Result<IPagedList<BookingListItemDto>>> Handle(GetBookingsQuery request, CancellationToken cancellationToken)
+    public async ValueTask<Result<IPagedList<BookingListItemDto>>> Handle(GetBookingsQuery 
+        request, CancellationToken cancellationToken)
     {
         var query = _db.Bookings.AsQueryable();
 
@@ -91,12 +99,14 @@ public class BookingsHandler :
                 displayNames.GetValueOrDefault(r.UserId, r.UserId)))
             .ToList();
 
-        var pagedList = new StaticPagedList<BookingListItemDto>(bookings, request.PageNumber, request.PageSize, totalCount);
+        var pagedList = new StaticPagedList<BookingListItemDto>(bookings, request.PageNumber, 
+            request.PageSize, totalCount);
 
         return Result.Ok((IPagedList<BookingListItemDto>)pagedList);
     }
 
-    public async ValueTask<Result<ResourceScheduleDto>> Handle(GetResourceScheduleQuery request, CancellationToken cancellationToken)
+    public async ValueTask<Result<ResourceScheduleDto>> Handle(GetResourceScheduleQuery request, 
+        CancellationToken cancellationToken)
     {
         var resource = await _db.Resources
             .FirstOrDefaultAsync(r => r.Id == request.ResourceId, cancellationToken);
@@ -116,16 +126,11 @@ public class BookingsHandler :
             .ToListAsync(cancellationToken);
 
         var slots = timeSlots
-            .Select(t => new TimeSlotStatusDto(t.Id, t.StartTime, t.EndTime, bookedTimeSlotIds.Contains(t.Id)))
+            .Select(t => new TimeSlotStatusDto(t.Id, t.StartTime, t.EndTime, bookedTimeSlotIds
+            .Contains(t.Id)))
             .ToList();
 
         return Result.Ok(new ResourceScheduleDto(resource.Id, resource.Name, request.Date, slots));
     }
-
-    
-
-
-
-
 
 }

@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace MeetingBooking.Application.Resources;
+namespace MeetingBooking.Application.Resources.Commands;
 
 public class CreateResourceCommandValidator : AbstractValidator<CreateResourceCommand>
 {

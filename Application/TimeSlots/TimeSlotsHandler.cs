@@ -1,6 +1,8 @@
 ﻿using FluentResults;
 using Mediator;
 using MeetingBooking.Application.Common.Interfaces;
+using MeetingBooking.Application.TimeSlots.Commands;
+using MeetingBooking.Application.TimeSlots.Queries;
 using MeetingBooking.Domain;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,7 +20,8 @@ public class TimeSlotsHandler :
         _db = db;
     }
 
-    public async ValueTask<Result<Guid>> Handle(CreateTimeSlotCommand request, CancellationToken cancellationToken)
+    public async ValueTask<Result<Guid>> Handle(CreateTimeSlotCommand request, CancellationToken 
+        cancellationToken)
     {
         var timeSlot = new TimeSlot(request.StartTime, request.EndTime);
         _db.TimeSlots.Add(timeSlot);
@@ -26,18 +29,22 @@ public class TimeSlotsHandler :
         return Result.Ok(timeSlot.Id);
     }
 
-    public async ValueTask<Result> Handle(DeleteTimeSlotCommand request, CancellationToken cancellationToken)
+    public async ValueTask<Result> Handle(DeleteTimeSlotCommand request, CancellationToken 
+        cancellationToken)
     {
         var timeSlot = await _db.TimeSlots.FirstOrDefaultAsync(t => t.Id == request.Id, cancellationToken);
         if (timeSlot is null)
+        {
             return Result.Fail($"TimeSlot {request.Id} not found.");
-
+        }
+      
         _db.TimeSlots.Remove(timeSlot);
         await _db.SaveChangesAsync(cancellationToken);
         return Result.Ok();
     }
 
-    public async ValueTask<Result<IReadOnlyList<TimeSlotDto>>> Handle(GetAllTimeSlotsQuery request, CancellationToken cancellationToken)
+    public async ValueTask<Result<IReadOnlyList<TimeSlotDto>>> Handle(GetAllTimeSlotsQuery request, 
+        CancellationToken cancellationToken)
     {
         var slots = await _db.TimeSlots
             .OrderBy(t => t.StartTime)

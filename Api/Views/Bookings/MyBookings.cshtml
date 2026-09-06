@@ -1,5 +1,5 @@
 ﻿@using X.PagedList.Mvc.Core
-@model X.PagedList.IPagedList<MeetingBooking.Application.Bookings.BookingListItemDto>
+@model X.PagedList.IPagedList<MeetingBooking.Application.Bookings.Dtos.BookingListItemDto>
 
 <h2>@(User.IsInRole("Admin") ? Localizer["Booking_AllBookingsTitle"] : Localizer["Booking_MyBookingsTitle"])</h2>
 <table class="table">

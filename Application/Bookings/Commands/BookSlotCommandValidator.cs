@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace MeetingBooking.Application.Bookings;
+namespace MeetingBooking.Application.Bookings.Commands;
 
 public class BookSlotCommandValidator : AbstractValidator<BookSlotCommand>
 {

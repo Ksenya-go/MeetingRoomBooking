@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MeetingBooking.Application.TimeSlots;
+using MeetingBooking.Application.TimeSlots.Commands;
 
 namespace MeetingBooking.Api.Controllers;
 

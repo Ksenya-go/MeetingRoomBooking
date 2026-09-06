@@ -1,7 +1,7 @@
 ﻿using FluentResults;
 using Mediator;
 
-namespace MeetingBooking.Application.Resources;
+namespace MeetingBooking.Application.Resources.Commands;
 
 public record CreateResourceCommand(string Name, string? Description, 
     int Capacity) : IRequest<Result<Guid>>;
