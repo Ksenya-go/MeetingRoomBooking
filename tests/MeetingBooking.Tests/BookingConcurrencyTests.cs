@@ -5,17 +5,15 @@ using MeetingBooking.Domain;
 using MeetingBooking.Infrastructure.Persistence;
 using MeetingBooking.Tests.TestDoubles;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace MeetingBooking.Tests;
 
 public class BookingConcurrencyTests : IAsyncLifetime
 {
 
-    private static readonly string ConnectionString =
-    Environment.GetEnvironmentVariable("TEST_DB_CONNECTION_STRING")
-    ?? throw new InvalidOperationException(
-        "Set the TEST_DB_CONNECTION_STRING environment variable before running tests. " +
-        "See README.md for instructions.");
+    private static readonly string ConnectionString = ResolveConnectionString();
+
 
     private Guid _resourceId;
     private Guid _timeSlotId;
@@ -84,4 +82,32 @@ public class BookingConcurrencyTests : IAsyncLifetime
 
         bookingsCount.Should().Be(1, "the database must contain exactly one booking for this slot");
     }
+
+    private static string ResolveConnectionString()
+    {
+        var fromEnv = Environment.GetEnvironmentVariable("TEST_DB_CONNECTION_STRING");
+        if (!string.IsNullOrWhiteSpace(fromEnv))
+        {
+            return fromEnv;
+        }
+
+        var config = new ConfigurationBuilder()
+                .SetBasePath(AppContext.BaseDirectory)
+                .AddJsonFile("testsettings.json", optional: true)
+                .AddJsonFile("testsettings.local.json", optional: true)
+                .Build();
+
+        var fromFile = config["TestDbConnectionString"];
+        if (!string.IsNullOrWhiteSpace(fromFile) && fromFile != "CHANGE_ME")
+        {
+            return fromFile;
+        }
+
+        throw new InvalidOperationException(
+            "No test database connection string found. Either set the " +
+            "TEST_DB_CONNECTION_STRING environment variable, or edit " +
+            "tests/MeetingBooking.Tests/testsettings.json with a real connection string. " +
+            "See README.md for details.");
+    }
+
 }
