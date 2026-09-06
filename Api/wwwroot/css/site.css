@@ -263,14 +263,17 @@ label {
     margin-bottom: 0.3rem;
 }
 
+.main-content {
+    min-height: auto;
+}
+
 footer.footer {
     background: transparent;
     color: var(--text-muted);
-    margin-top: 5rem;
-    border-top: 1px solid rgba(30,27,46,0.08) !important;
-}
-.main-content {
-    min-height: 60vh;
+    margin-top: 0.5rem !important;
+    padding: 0.25rem 0 !important;
+    border-top: 1px solid rgba(30, 27, 46, 0.08) !important;
+    line-height: normal !important;
 }
 
 /* ===== Compact forms ===== */
