@@ -1,4 +1,12 @@
+using static System.Runtime.InteropServices.JavaScript.JSType;
+
 namespace MeetingBooking.Domain;
+
+/// <summary>
+/// A booking of a specific Resource's TimeSlot on a specific Date, made
+///by a specific user.Uniqueness of (ResourceId, TimeSlotId, Date) is
+///enforced by a database index (see BookingConfiguration)
+/// </summary>
 
 public class Booking
 {
