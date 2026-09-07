@@ -3,6 +3,11 @@ using MeetingBooking.Application.Common.Interfaces;
 
 namespace MeetingBooking.Infrastructure.Realtime;
 
+/// <summary>
+/// Sends real-time slot-status notifications via Azure SignalR Service
+/// after a successful booking. 
+/// </summary>
+
 public class SignalRBookingNotifier : IBookingNotifier
 {
     private readonly IHubContext<BookingHub> _hubContext;

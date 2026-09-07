@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MeetingBooking.Infrastructure.Identity;
 
+/// <summary>
+/// Resolves user IDs to display names and emails without N+1 queries.
+/// </summary>
 public class UserLookupService : IUserLookupService
 {
     private readonly MeetingBookingDbContext _db;

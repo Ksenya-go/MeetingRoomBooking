@@ -1,7 +1,9 @@
 ﻿using FluentResults;
 
 namespace MeetingBooking.Application.Common.Errors;
-
+/// <summary>
+/// Returned when a booking request conflicts with an already-booked slot.
+/// </summary>
 public class BookingConflictError : Error
 {
     public BookingConflictError(Guid resourceId, Guid timeSlotId, DateOnly date)

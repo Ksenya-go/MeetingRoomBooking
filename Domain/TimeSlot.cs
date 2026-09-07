@@ -1,6 +1,8 @@
 namespace MeetingBooking.Domain;
-
-
+/// <summary>
+/// A fixed daily bookable time range (e.g. 09:00–10:00), shared by all
+/// resources rather than defined separately per room.
+/// </summary>
 public class TimeSlot
 {
     public Guid Id { get; private set; }

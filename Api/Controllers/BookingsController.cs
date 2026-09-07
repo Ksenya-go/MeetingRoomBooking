@@ -16,7 +16,7 @@ public class BookingsController : Controller
         _sender = sender;
     }
 
-    // GET /Bookings/Schedule/{resourceId}?date=2026-09-10
+    // GET /Bookings/Schedule/{resourceId}
     [HttpGet]
     public async Task<IActionResult> Schedule(Guid resourceId, DateOnly? date, CancellationToken cancellationToken)
     {
