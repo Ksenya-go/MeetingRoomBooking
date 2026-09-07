@@ -29,14 +29,16 @@
         }
     </tbody>
 </table>
-<div class="d-flex justify-content-center mb-5">
-    @Html.PagedListPager(
-        Model,
-        page => Url.Action("MyBookings", new { page }),
-        new PagedListRenderOptions
+@{
+    var totalPages = (int)Math.Ceiling((double)Model.TotalItemCount / Model.PageSize);
+}
+<nav class="d-flex justify-content-center mb-5 mt-4">
+    <ul class="pagination">
+        @for (int i = 1; i <= totalPages; i++)
         {
-            LiElementClasses = new[] { "page-item" },
-            PageClasses = new[] { "page-link" },
-            UlElementClasses = new[] { "pagination" }
-        })
-</div>
+            <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                <a class="page-link" href="@Url.Action("MyBookings", new { page = i })">@i</a>
+            </li>
+        }
+    </ul>
+</nav>
