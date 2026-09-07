@@ -1,0 +1,9 @@
+﻿@inject IStringLocalizer<SharedResource> Localizer
+﻿@{
+ViewData["Title"] = Localizer["Nav_Home"];
+}
+
+<div class="hero text-center">
+    <h1 class="display-5 mb-3">@Localizer["Home_Title"]</h1>
+    <p class="hero-subtitle">@Localizer["Home_Subtitle"]</p>
+</div>

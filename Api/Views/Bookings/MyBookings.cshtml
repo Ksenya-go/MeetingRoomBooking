@@ -1,0 +1,42 @@
+﻿@using X.PagedList.Mvc.Core
+@model X.PagedList.IPagedList<MeetingBooking.Application.Bookings.Dtos.BookingListItemDto>
+
+<h2>@(User.IsInRole("Admin") ? Localizer["Booking_AllBookingsTitle"] : Localizer["Booking_MyBookingsTitle"])</h2>
+<table class="table">
+    <thead>
+        <tr class="text-center">
+            <th>@Localizer["MeetingRooms_Name"]</th>
+            <th>@Localizer["Common_Date"]</th>
+            <th>@Localizer["Common_Time"]</th>
+            @if (User.IsInRole("Admin"))
+            {
+                <th>@Localizer["Common_User"]</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var b in Model)
+        {
+            <tr class="text-center">
+                <td>@b.ResourceName</td>
+                <td>@b.Date.ToString("dd.MM.yyyy")</td>
+                <td>@b.StartTime.ToString("HH:mm") - @b.EndTime.ToString("HH:mm")</td>
+                @if (User.IsInRole("Admin"))
+                {
+                    <td>@b.UserDisplayName</td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+<div class="d-flex justify-content-center mb-5">
+    @Html.PagedListPager(
+        Model,
+        page => Url.Action("MyBookings", new { page }),
+        new PagedListRenderOptions
+        {
+            LiElementClasses = new[] { "page-item" },
+            PageClasses = new[] { "page-link" },
+            UlElementClasses = new[] { "pagination" }
+        })
+</div>

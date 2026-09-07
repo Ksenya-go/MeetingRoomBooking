@@ -1,0 +1,17 @@
+﻿@inject IStringLocalizer<SharedResource> Localizer
+@model MeetingBooking.Application.TimeSlots.Commands.CreateTimeSlotCommand
+<h2>@Localizer["TimeSlots_AddButton"]</h2>
+<div class="surface-card form-narrow">
+    <form asp-action="Create" method="post">
+        <div class="mb-3">
+            <label>@Localizer["TimeSlots_StartTime"]</label>
+            <input name="StartTime" type="time" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label>@Localizer["TimeSlots_EndTime"]</label>
+            <input name="EndTime" type="time" class="form-control" />
+        </div>
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <button type="submit" class="btn btn-primary">@Localizer["Common_CreateButton"]</button>
+    </form>
+</div>

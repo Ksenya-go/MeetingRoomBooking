@@ -1,0 +1,40 @@
+﻿@model X.PagedList.IPagedList<MeetingBooking.Application.TimeSlots.TimeSlotDto>
+<h2>@Localizer["TimeSlots_PageTitle"]</h2>
+<a asp-action="Create" class="btn btn-primary mb-3">@Localizer["TimeSlots_AddButton"]</a>
+<table class="table">
+    <thead>
+        <tr class="text-center">
+            <th>@Localizer["TimeSlots_Start"]</th>
+            <th>@Localizer["TimeSlots_End"]</th>
+            <th>@Localizer["MeetingRooms_Actions"]</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var slot in Model)
+        {
+            <tr class="text-center">
+                <td>@slot.StartTime.ToString("HH:mm")</td>
+                <td>@slot.EndTime.ToString("HH:mm")</td>
+                <td>
+                    <form asp-action="Delete" asp-route-id="@slot.Id" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-danger">@Localizer["Common_DeleteButton"]</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@{
+    var totalPages = (int)Math.Ceiling((double)Model.TotalItemCount / Model.PageSize);
+}
+<nav class="d-flex justify-content-center mb-5 mt-4">
+    <ul class="pagination">
+        @for (int i = 1; i <= totalPages; i++)
+        {
+            <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
+            </li>
+        }
+    </ul>
+</nav>

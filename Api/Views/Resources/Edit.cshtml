@@ -1,0 +1,22 @@
+﻿@inject IStringLocalizer<SharedResource> Localizer
+@model MeetingBooking.Application.Resources.Commands.UpdateResourceCommand
+<h2>@Localizer["MeetingRooms_EditTitle"]</h2>
+<div class="surface-card form-narrow">
+    <form asp-action="Edit" method="post">
+        <input type="hidden" asp-for="Id" />
+        <div class="mb-3">
+            <label>@Localizer["MeetingRooms_Name"]</label>
+            <input asp-for="Name" class="form-control" placeholder="@Localizer["Resources_RoomExamplePlaceholder"]" />
+        </div>
+        <div class="mb-3">
+            <label>@Localizer["MeetingRooms_Description"]</label>
+            <input asp-for="Description" class="form-control" placeholder="@Localizer["Resources_DescriptionPlaceholder"]" />
+        </div>
+        <div class="mb-3">
+            <label>@Localizer["MeetingRooms_Capacity"]</label>
+            <input asp-for="Capacity" type="number" min="1" class="form-control" placeholder="@Localizer["Resources_CapacityPlaceholder"]" />
+        </div>
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <button type="submit" class="btn btn-primary">@Localizer["Common_SaveButton"]</button>
+    </form>
+</div>

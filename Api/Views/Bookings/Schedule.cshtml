@@ -1,0 +1,90 @@
+﻿@inject IStringLocalizer<SharedResource> Localizer
+@model MeetingBooking.Application.Bookings.Dtos.ResourceScheduleDto
+
+<div class="d-flex justify-content-start align-items-start flex-wrap gap-5 mb-4">
+    <div>
+        <h2 class="mb-1">@Model.ResourceName</h2>
+        <p class="text-muted mb-0">@Model.Date.ToString("dddd, dd MMMM yyyy")</p>
+    </div>
+    <form method="get" class="d-flex gap-2 align-items-end">
+        <input type="hidden" name="resourceId" value="@Model.ResourceId" />
+        <div>
+            <label class="d-block">@Localizer["Common_Date"]</label>
+            <input type="date" name="date" value="@Model.Date.ToString("yyyy-MM-dd")" class="form-control" />
+        </div>
+        <button type="submit" class="btn btn-primary">@Localizer["Booking_ShowButton"]</button>
+    </form>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div class="slot-grid" id="scheduleGrid">
+    @foreach (var slot in Model.Slots)
+    {
+        <div class="slot-card @(slot.IsBooked ? "slot-booked" : "slot-free")" data-timeslot-id="@slot.TimeSlotId">
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="slot-time">@slot.StartTime.ToString("HH:mm") – @slot.EndTime.ToString("HH:mm")</span>
+                <span class="badge status-badge @(slot.IsBooked ? "bg-danger" : "bg-success")">
+                    @(slot.IsBooked ? Localizer["Booking_BookedStatus"] : Localizer["Booking_FreeStatus"])
+                </span>
+            </div>
+            <div class="slot-action">
+                @if (!slot.IsBooked)
+                {
+                    <form asp-action="Book" method="post">
+                        <input type="hidden" name="resourceId" value="@Model.ResourceId" />
+                        <input type="hidden" name="timeSlotId" value="@slot.TimeSlotId" />
+                        <input type="hidden" name="date" value="@Model.Date.ToString("yyyy-MM-dd")" />
+                        <button type="submit" class="btn btn-primary btn-sm">@Localizer["Booking_BookButton"]</button>
+                    </form>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+    <script>
+        const resourceId = "@Model.ResourceId";
+        const currentDate = "@Model.Date.ToString("yyyy-MM-dd")";
+
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/hubs/booking")
+            .withAutomaticReconnect()
+            .build();
+
+        connection.on("SlotBooked", (data) => {
+            if (data.date !== currentDate) return;
+
+            const card = document.querySelector(`.slot-card[data-timeslot-id="${data.timeSlotId}"]`);
+            if (!card) return;
+
+            card.classList.remove("slot-free");
+            card.classList.add("slot-booked");
+
+            const badge = card.querySelector(".status-badge");
+            badge.textContent = '@Localizer["Booking_BookedStatus"]';
+            badge.classList.remove("bg-success");
+            badge.classList.add("bg-danger");
+
+            const action = card.querySelector(".slot-action");
+            action.innerHTML = "";
+        });
+
+        connection.start()
+            .then(() => connection.invoke("JoinResourceGroup", resourceId))
+            .catch(err => console.error("SignalR connection error:", err));
+
+        window.addEventListener("beforeunload", () => {
+            connection.invoke("LeaveResourceGroup", resourceId).catch(() => {});
+        });
+    </script>
+}
