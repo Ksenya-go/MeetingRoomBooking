@@ -105,8 +105,8 @@ MeetingRoomBooking.sln
 
 ## Concurrency control
 
-**Requirement**: if two requests try to book the same slot at the same time, exactly one must succeed and the other must receive a clear conflict — never a 500 error, never a silent overwrite.
-**Chosen approach**: a unique database constraint prevents duplicate bookings for the same resource and time slot. Constraint violations are caught as `DbUpdateException` and converted into a `BookingConflictError`; successful bookings trigger a SignalR notification.
+- **Requirement**: if two requests try to book the same slot at the same time, exactly one must succeed and the other must receive a clear conflict — never a 500 error, never a silent overwrite.
+- **Chosen approach**: a unique database constraint prevents duplicate bookings for the same resource and time slot. Constraint violations are caught as `DbUpdateException` and converted into a `BookingConflictError`; successful bookings trigger a SignalR notification.
 
 ## Real-time updates
 `BookingHub (SignalR)` uses one group per resource `(resource-{id})`. After a successful booking, SignalRBookingNotifier notifies the relevant group — everyone currently viewing that resource's schedule sees the slot status update without refreshing the page.
