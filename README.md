@@ -12,7 +12,7 @@ A web application for booking meeting rooms with a guaranteed defense against do
 - [Azure resources and deployment](#azure-resources-and-deployment)
 - [Local Setup](#local-setup)
 - [Testing](#testing)
-- [About the use of Claude](#about-the-use-of-Claude)
+- [About the use of Claude](#about-the-use-of-claude)
 - [Future improvements](#future-improvements)
 
 ## Task description
@@ -196,11 +196,4 @@ Claude was used for architecture design, implementation, CQRS and concurrency st
 - Configure CI/CD with GitHub Actions using OIDC / federated identity once the required Azure permissions are available.
 - Make `TimeSlot` configurable per resource to support different booking schedules for different rooms.
 - Add email verification to the registration process.
-
-
-
-
-
-
-
-
+- The Azure Free-tier default hostname (*.azurewebsites.net) may occasionally trigger a Chrome Safe Browsing warning due to shared IP reputation, unrelated to the application itself- this would go away with a custom domain.
