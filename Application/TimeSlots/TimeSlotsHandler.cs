@@ -20,7 +20,7 @@ public class TimeSlotsHandler :
     {
         _db = db;
     }
-
+    /// <summary>Creates a new shared time slot. Admin-only.</summary>
     public async ValueTask<Result<Guid>> Handle(CreateTimeSlotCommand request, CancellationToken 
         cancellationToken)
     {
@@ -29,7 +29,7 @@ public class TimeSlotsHandler :
         await _db.SaveChangesAsync(cancellationToken);
         return Result.Ok(timeSlot.Id);
     }
-
+    /// <summary>Deletes a time slot. Admin-only.</summary>
     public async ValueTask<Result> Handle(DeleteTimeSlotCommand request, CancellationToken 
         cancellationToken)
     {

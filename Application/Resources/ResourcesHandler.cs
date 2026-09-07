@@ -34,7 +34,8 @@ public class ResourcesHandler :
     public async ValueTask<Result> Handle(UpdateResourceCommand request, CancellationToken 
         cancellationToken)
     {
-        var resource = await _db.Resources.FirstOrDefaultAsync(r => r.Id == request.Id, cancellationToken);
+        var resource = await _db.Resources.FirstOrDefaultAsync(r => r.Id == request.Id, 
+            cancellationToken);
         if (resource is null)
         {
             return Result.Fail($"Resource {request.Id} not found.");
@@ -48,7 +49,8 @@ public class ResourcesHandler :
     public async ValueTask<Result> Handle(DeleteResourceCommand request, CancellationToken 
         cancellationToken)
     {
-        var resource = await _db.Resources.FirstOrDefaultAsync(r => r.Id == request.Id, cancellationToken);
+        var resource = await _db.Resources.FirstOrDefaultAsync(r => r.Id == request.Id, 
+            cancellationToken);
         if (resource is null)
         {
             return Result.Fail($"Resource {request.Id} not found.");
@@ -86,21 +88,24 @@ public class ResourcesHandler :
             .Take(request.PageSize)
             .ToListAsync(cancellationToken);
 
-        var pagedList = new StaticPagedList<ResourceDto>(resources, request.PageNumber, request.PageSize, totalCount);
+        var pagedList = new StaticPagedList<ResourceDto>(resources, request.PageNumber, 
+            request.PageSize, totalCount);
 
         return Result.Ok((IPagedList<ResourceDto>)pagedList);
     }
 
-    public async ValueTask<Result<ResourceDto>> Handle(GetResourceByIdQuery request, CancellationToken cancellationToken)
+    public async ValueTask<Result<ResourceDto>> Handle(GetResourceByIdQuery request, 
+        CancellationToken cancellationToken)
     {
-        var resource = await _db.Resources.FirstOrDefaultAsync(r => r.Id == request.Id, cancellationToken);
+        var resource = await _db.Resources.FirstOrDefaultAsync(r => r.Id == request.Id, 
+            cancellationToken);
         if (resource is null)
+        {
             return Result.Fail($"Resource {request.Id} not found.");
-
-        return Result.Ok(new ResourceDto(resource.Id, resource.Name, resource.Description, resource.Capacity, resource.IsActive));
+        }
+  
+        return Result.Ok(new ResourceDto(resource.Id, resource.Name, resource.Description, 
+            resource.Capacity, resource.IsActive));
     }
-
-
-
 
 }
