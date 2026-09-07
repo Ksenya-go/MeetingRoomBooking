@@ -133,8 +133,6 @@ A resource with upcoming active bookings cannot be deleted — a business rule t
 | **Azure SignalR Service** | `meetingbooking-signalr`     | Free F1, Default mode             |
 | **Azure Web App**         | `meetingbooking-app`         | .NET 10, Free F1 App Service plan |
 
-**Deployed application**: https://meetingbooking-app-etd4cxfneecsdkay.swedencentral-01.azurewebsites.net/
-
 Connection strings and secrets are configured in App Service → Environment variables (Connection strings / Application settings), never stored in the repository.
 
 ## Local Setup
