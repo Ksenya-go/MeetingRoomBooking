@@ -5,7 +5,7 @@ using MeetingBooking.Infrastructure.Identity;
 using MeetingBooking.Api.Models;
 
 namespace MeetingBooking.Api.Controllers;
-
+/// <summary>Login, registration, and logout using ASP.NET Core Identity.</summary>
 public class AccountController : Controller
 {
     private readonly SignInManager<ApplicationUser> _signInManager;

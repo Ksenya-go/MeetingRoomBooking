@@ -6,6 +6,8 @@ using MeetingBooking.Application.Resources.Queries;
 
 namespace MeetingBooking.Api.Controllers;
 
+/// <summary>Meeting room CRUD. Viewing is open to any authenticated user; creating,
+/// editing, and deleting are restricted to Admin via role-based authorization.</summary>
 [Authorize]
 public class ResourcesController : Controller
 {
@@ -65,7 +67,8 @@ public class ResourcesController : Controller
             return NotFound();
         }
       
-        var command = new UpdateResourceCommand(result.Value.Id, result.Value.Name, result.Value.Description, result.Value.Capacity);
+        var command = new UpdateResourceCommand(result.Value.Id, result.Value.Name, 
+            result.Value.Description, result.Value.Capacity);
         return View(command);
     }
 
