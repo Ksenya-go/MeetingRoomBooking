@@ -13,16 +13,16 @@ A web application for booking meeting rooms with a guaranteed defense against do
 - [Getting started (local)](#getting-started-(local))
 - [Testing](#testing)
 - [About the use of Claude](#about-the-use-of-Claude)
-- [Known limitations](#Known-limitations)
+- [Future improvements](#future-improvements)
 
 ## Task description
 A company has a limited set of meeting rooms (resources), each with a fixed set of daily time slots. Multiple users may try to book the same slot at the same time — the system guarantees that exactly one request succeeds and the rest get a clear conflict, never a silent overwrite and never a 500 error.
 
 ## Business capabilities:
-- view any resource and its schedule (free/booked slots)
+- view any meeting room and its schedule (free/booked slots)
 - book a free slot
 - view your own bookings (User) or all users' bookings (Admin), with pagination
-- manage resources: create, edit, deactivate (Admin)
+- manage meeting rooms: create, edit, deactivate (Admin)
 - manage time slots: create, delete (Admin)
 - real-time slot status updates for everyone currently viewing that resource's schedule
 
@@ -54,10 +54,10 @@ MeetingBooking.Api                — ASP.NET Core MVC (controllers, Razor Views
 ```
 
 ## Patterns:
-- **CQRS** — commands and queries via Mediator; one handler class per feature (BookingsHandler, ResourcesHandler, TimeSlotsHandler), not one class per single command
-- **Result pattern (FluentResults)** — expected business failures (booking conflict, attempting to delete a resource with upcoming bookings) are returned as Result.Fail(...), not thrown as exceptions
-- **Unique constraint as the concurrency mechanism** — the double-booking guarantee lives at the database level, not the application level (details below)
-- **Composition root in Infrastructure** — all service registration for the layer is extracted into Infrastructure/DependencyInjection.cs (AddInfrastructure()); Program.cs is only responsible for the HTTP pipeline
+- **CQRS** — commands and queries via Mediator
+- **Result pattern (FluentResults)** — expected business failures (booking conflict, attempting to delete a resource with upcoming bookings) are returned as Result.Fail(...)
+- **Unique constraint as the concurrency mechanism** — the double-booking guarantee lives at the database level
+- **Composition root in Infrastructure** — all service registration for the layer is extracted into Infrastructure/DependencyInjection.cs (AddInfrastructure())
 
 ## Domain model
 ```
@@ -83,21 +83,17 @@ MeetingRoomBooking.sln
 │   ├── Bookings/                    # BookSlotCommand, GetResourceScheduleQuery, GetBookingsQuery, BookingsHandler
 │   ├── Resources/                   # Create/Update/Delete/GetAll, ResourcesHandler
 │   ├── TimeSlots/                   # Create/Delete/GetAll, TimeSlotsHandler
-│   └── Common/                      # Interfaces (IApplicationDbContext, IBookingNotifier,
-│                                     #   ICurrentUserService, IUserLookupService), Errors
-│
+│   └── Common/                      # Interfaces (IApplicationDbContext, IBookingNotifier, ICurrentUserService, IUserLookupService), Errors                                 
 ├── Infrastructure/                  # EF Core, Identity, SignalR, DI
 │   ├── Persistence/                 # MeetingBookingDbContext, Configurations/, Migrations/
 │   ├── Identity/                    # ApplicationUser, CurrentUserService, IdentitySeeder, UserLookupService
 │   ├── Realtime/                    # BookingHub, SignalRBookingNotifier
 │   └── DependencyInjection.cs       # AddInfrastructure()
-│
 ├── Api/                             # ASP.NET Core MVC
 │   ├── Controllers/                 # Account, Resources, TimeSlots, Bookings
 │   ├── Views/                       # Razor Views (Home, Account, Resources, TimeSlots, Bookings)
 │   ├── wwwroot/                     # site.css (custom design system), SignalR client JS
 │   └── Program.cs
-│
 └── tests/
     └── MeetingBooking.Tests/
         ├── BookingConcurrencyTests.cs        # automated concurrency test (real SQL)
@@ -109,16 +105,8 @@ MeetingRoomBooking.sln
 
 ## Concurrency control
 
-**Requirement**: if two requests try to book the same slot at effectively the same time, exactly one must succeed and the other must receive a clear conflict — never a 500 error, never a silent overwrite.
-
-**Chosen approach**: a unique database constraint, rather than optimistic concurrency (RowVersion) or explicit transactional locking.
-
-A unique index on (ResourceId, TimeSlotId, Date) on the Bookings table (Infrastructure/Persistence/Configurations/BookingConfiguration.cs). The flow in BookingsHandler.Handle(BookSlotCommand ...):
-
-1. A Booking entity is constructed and added to the DbContext
-2. SaveChangesAsync is called
-3. If the unique index is violated, EF Core throws a DbUpdateException wrapping a SqlException with error number 2601 or 2627 — this is caught and converted into Result.Fail(new BookingConflictError(...))
-4. Otherwise, the save succeeds, a SignalR notification is sent, and Result.Ok(bookingId) is returned
+**Requirement**: if two requests try to book the same slot at the same time, exactly one must succeed and the other must receive a clear conflict — never a 500 error, never a silent overwrite.
+**Chosen approach**: a unique database constraint prevents duplicate bookings for the same resource and time slot. Constraint violations are caught as `DbUpdateException` and converted into a `BookingConflictError`; successful bookings trigger a SignalR notification.
 
 ## Real-time updates
 `BookingHub (SignalR)` uses one group per resource `(resource-{id})`. After a successful booking, SignalRBookingNotifier notifies the relevant group — everyone currently viewing that resource's schedule sees the slot status update without refreshing the page.
@@ -189,25 +177,20 @@ dotnet test
 | `BookSlotCommandValidatorTests` | Unit                    | Rejecting past-dated bookings and empty IDs                                           |
 
 
-Setting up the concurrency test
+## Setting up the concurrency test
+The test runs against a real SQL Server / Azure SQL database.
 
-The test connects to a real SQL Server / Azure SQL database (not in-memory) — this is intentional, since EF Core's InMemory provider does not enforce unique constraints the same way a real SQL engine does.
-
-The connection string is resolved in this priority order:
-
-The TEST_DB_CONNECTION_STRING environment variable
-tests/MeetingBooking.Tests/testsettings.local.json (gitignored, for a developer's own credentials)
-tests/MeetingBooking.Tests/testsettings.json (committed to the repo, contains a CHANGE_ME placeholder)
+The connection string is resolved from (in order): the TEST_DB_CONNECTION_STRING environment variable, testsettings.local.json (gitignored), or testsettings.json (committed, with a CHANGE_ME placeholder).
 
 ## About the use of Claude
 The task specifies Claude Code, but development was carried out through the standard Claude.ai chat interface due to access limitations.
 
 Claude was used for architecture design, implementation, CQRS and concurrency strategy, testing, debugging, and documentation. All generated code was reviewed, adapted to the project, and manually verified through builds, tests, and UI checks, following the conventions documented in CLAUDE.md.
 
-## Known limitations
-- CI/CD via GitHub Actions (OIDC / federated identity) could not be configured — the Azure for Students subscription lacks the Microsoft Entra ID App Registration permissions required for it. Deployment is done manually via Visual Studio Publish (the attempt-and-revert history for CI/CD is visible in the git log)
-- TimeSlot is shared across all resources (not tied to a specific room) — matches the task's wording ("a fixed set of bookable time slots"), but doesn't allow different rooms to have different time grids
-- No email confirmation on registration — Identity is configured for simplified registration without email verification, which is acceptable for the scope of this task
+## Future improvements
+- Configure CI/CD with GitHub Actions using OIDC / federated identity once the required Azure permissions are available.
+- Make `TimeSlot` configurable per resource to support different booking schedules for different rooms.
+- Add email verification to the registration process.
 
 
 
