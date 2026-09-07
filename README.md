@@ -10,7 +10,7 @@ A web application for booking meeting rooms with a guaranteed defense against do
 - [Real-time updates](#real-time-updates)
 - [Roles and authorization](#roles-and-authorization)
 - [Azure resources and deployment](#azure-resources-and-deployment)
-- [Getting started (local)](#getting-started-(local))
+- [Local Setup](#local-setup)
 - [Testing](#testing)
 - [About the use of Claude](#about-the-use-of-Claude)
 - [Future improvements](#future-improvements)
@@ -137,7 +137,7 @@ A resource with upcoming active bookings cannot be deleted — a business rule t
 
 Connection strings and secrets are configured in App Service → Environment variables (Connection strings / Application settings), never stored in the repository.
 
-## Getting started (local)
+## Local Setup
 Requirements:
 - .NET 10 SDK
 - Access to a SQL Server / Azure SQL instance (LocalDB was not used — configuration targets Azure SQL)
