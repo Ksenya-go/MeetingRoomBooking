@@ -270,11 +270,22 @@ label {
 footer.footer {
     background: transparent;
     color: var(--text-muted);
-    margin-top: 0.5rem !important;
-    padding: 0.25rem 0 !important;
-    border-top: 1px solid rgba(30, 27, 46, 0.08) !important;
-    line-height: normal !important;
+    margin-top: 1rem;
+    padding: 1rem 0;
+    border-top: 1px solid rgba(30, 27, 46, 0.1);
 }
+
+    footer.footer .container {
+        display: flex;
+        justify-content: center;
+    }
+
+.pagination-wrapper {
+    border-top: 1px solid rgba(30, 27, 46, 0.1);
+    padding-top: 1.5rem;
+    margin-top: 1.5rem;
+}
+
 
 /* ===== Compact forms ===== */
 .form-narrow {

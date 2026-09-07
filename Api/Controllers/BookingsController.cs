@@ -58,7 +58,7 @@ public class BookingsController : Controller
         var isAdmin = User.IsInRole("Admin");
         var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
 
-        var result = await _sender.Send(new GetBookingsQuery(userId, isAdmin, page, PageSize: 10), cancellationToken);
+        var result = await _sender.Send(new GetBookingsQuery(userId, isAdmin, page, PageSize: 11), cancellationToken);
         return View(result.Value);
     }
 

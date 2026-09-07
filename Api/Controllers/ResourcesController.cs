@@ -20,7 +20,7 @@ public class ResourcesController : Controller
 
     public async Task<IActionResult> Index(int page = 1, CancellationToken cancellationToken = default)
     {
-        var result = await _sender.Send(new GetAllResourcesQuery(page, PageSize: 10), cancellationToken);
+        var result = await _sender.Send(new GetAllResourcesQuery(page, PageSize: 12), cancellationToken);
         return View(result.Value);
     }
 
