@@ -19,7 +19,7 @@ public class TimeSlotsController : Controller
 
     public async Task<IActionResult> Index(int page = 1, CancellationToken cancellationToken = default)
     {
-        var result = await _sender.Send(new GetAllTimeSlotsQuery(page, PageSize: 7), cancellationToken);
+        var result = await _sender.Send(new GetAllTimeSlotsQuery(page, PageSize: 12), cancellationToken);
         return View(result.Value);
     }
 
