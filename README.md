@@ -162,9 +162,11 @@ dotnet ef database update --project Infrastructure --startup-project Api
 # 5. Run
 dotnet run --project Api
 ```
-On first run, IdentitySeeder automatically creates the Admin/User roles and an admin account:
-- Email: admin@meetingbooking.local
-- Password: Admin123!
+Set the seed admin credentials before first run (User Secrets, shown above):
+- `SeedAdmin:Email`
+- `SeedAdmin:Password`
+
+If left unset, no admin account is created automatically — you'll need to register a user and promote them to the Admin role manually.
   
 Time slots are added through the UI (/TimeSlots, Admin role) — the database is empty by default.
 
