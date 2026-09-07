@@ -30,9 +30,6 @@ public static class IdentitySeeder
 
         if (string.IsNullOrWhiteSpace(adminEmail) || string.IsNullOrWhiteSpace(adminPassword))
         {
-            // No seed admin configured — nothing to do. Useful for
-            // environments where the admin account is created some
-            // other way.
             return;
         }
 

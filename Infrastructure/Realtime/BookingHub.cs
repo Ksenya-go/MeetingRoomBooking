@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 
 namespace MeetingBooking.Infrastructure.Realtime;
-
+/// <summary>
+/// SignalR hub for real-time booking updates, scoped to the currently viewed Resource.
+/// </summary>
 public class BookingHub : Hub
 {
     public async Task JoinResourceGroup(string resourceId)
