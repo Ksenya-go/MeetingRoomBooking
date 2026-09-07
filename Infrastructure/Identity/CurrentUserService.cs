@@ -4,6 +4,10 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 namespace MeetingBooking.Infrastructure.Identity;
 
+/// <summary>
+/// Exposes the current user's ID and Admin status to the Application layer
+/// without direct dependency on HttpContext.
+/// </summary>
 public class CurrentUserService : ICurrentUserService
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
