@@ -32,7 +32,7 @@ public class TimeSlotsController : Controller
         var result = await _sender.Send(command, cancellationToken);
         if (result.IsFailed)
         {
-            ModelState.AddModelError(string.Empty, string.Join("; ", result.Errors));
+            ModelState.AddModelError(string.Empty, string.Join("; ", result.Errors.Select(e => e.Message)));
             return View(command);
         }
         return RedirectToAction(nameof(Index));
