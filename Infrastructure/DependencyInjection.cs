@@ -1,4 +1,8 @@
-﻿using MeetingBooking.Application.Common.Interfaces;
+﻿using FluentValidation;
+using Mediator;
+using MeetingBooking.Application.Bookings.Commands;
+using MeetingBooking.Application.Common.Behaviors;
+using MeetingBooking.Application.Common.Interfaces;
 using MeetingBooking.Infrastructure.Identity;
 using MeetingBooking.Infrastructure.Persistence;
 using MeetingBooking.Infrastructure.Realtime;
@@ -33,7 +37,8 @@ public static class DependencyInjection
             })
             .AddEntityFrameworkStores<MeetingBookingDbContext>()
             .AddDefaultTokenProviders();
-
+        services.AddValidatorsFromAssembly(typeof(BookSlotCommandValidator).Assembly);
+        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
         services.AddSignalR().AddAzureSignalR();
 
         return services;

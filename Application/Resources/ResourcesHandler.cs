@@ -13,7 +13,8 @@ public class ResourcesHandler :
     IRequestHandler<CreateResourceCommand, Result<Guid>>,
     IRequestHandler<UpdateResourceCommand, Result>,
     IRequestHandler<DeleteResourceCommand, Result>,
-    IRequestHandler<GetAllResourcesQuery, Result<IPagedList<ResourceDto>>>
+    IRequestHandler<GetAllResourcesQuery, Result<IPagedList<ResourceDto>>>,
+    IRequestHandler<GetResourceByIdQuery, Result<ResourceDto>>
 {
     private readonly IApplicationDbContext _db;
 
